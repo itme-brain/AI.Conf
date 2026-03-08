@@ -30,6 +30,13 @@ User (invokes via `claude --agent kevin`)
 | `conventions` | All agents | Coding conventions, commit format, quality priorities |
 | `worker-protocol` | Workers, Senior Workers | Output format, commit flow (RFR/LGTM/REVISE), feedback handling |
 | `qa-checklist` | Workers, Senior Workers | Self-validation checklist before returning output |
+| `project` | All agents | Instructs agents to check for and ingest `.claude/skills/project.md` if present |
+
+## Project-specific context
+
+To provide agents with project-specific instructions — architecture notes, domain conventions, tech stack details — create a `.claude/skills/project.md` file in your project repo. All agents will automatically check for and ingest it before starting work.
+
+This file is yours to write and maintain. Commit it with the project so it's always present when the team is invoked.
 
 ## Communication signals
 

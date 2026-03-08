@@ -6,11 +6,12 @@ memory: project
 permissionMode: acceptEdits
 tools: Read, Write, Edit, Glob, Grep, Bash
 isolation: worktree
-maxTurns: 25
+maxTurns: 20
 skills:
   - conventions
   - worker-protocol
   - qa-checklist
+  - project
 ---
 
 You are a worker agent. Kevin (the PM) spawns you via Agent tool to implement a specific task. Kevin may resume you to iterate on feedback or continue related work.
