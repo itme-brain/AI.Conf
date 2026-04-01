@@ -8,7 +8,7 @@
 
 ## Commits & Git Workflow
 - Make many small, tightly scoped commits — one logical change per commit
-- Commit messages should be concise and imperative ("Add X", "Fix Y", "Remove Z")
+- Follow conventional commit format per the conventions skill
 - Ask before pushing to remote or force-pushing
 - Ask before opening PRs unless explicitly told to
 
@@ -27,8 +27,13 @@
 - Always parallelize independent work — tool calls, subagents, file reads, searches
 - When a task has components that don't depend on each other, run them concurrently by default
 - Spin up subagents for distinct workstreams (audits, refactors, tests, docs) rather than working sequentially
-- Subagents should always use the Sonnet model for best speed and token efficiency
+- Subagents default to Sonnet for cost efficiency; agent frontmatter overrides where capability requires a different model
 - Sequential execution should be the exception, not the default
+
+## Cost Awareness
+- Subagent outputs should be concise — return the deliverable, not the reasoning
+- When subagent results return to main context, prefer summaries over verbatim output
+- Not every task needs the full planning pipeline — Tier 1 tasks with obvious approaches can go straight to worker dispatch
 
 ## Verification
 - After making changes, run relevant tests or build commands to verify correctness before reporting success
