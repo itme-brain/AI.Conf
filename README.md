@@ -12,6 +12,10 @@ cd ~/Documents/Personal/projects/agent-team
 
 The script symlinks `agents/`, `skills/`, `CLAUDE.md`, and `settings.json` into `~/.claude/`. Works on Linux, macOS, and Windows (Git Bash).
 
+## Maintenance
+
+**Symlink fragility:** `~/.claude/CLAUDE.md` and `~/.claude/settings.json` are installed as symlinks by `install.sh`. Some tools (including Claude Code itself when writing settings) resolve symlinks to regular files on write, silently breaking the link. If edits to the repo are no longer reflected in `~/.claude/`, re-run `./install.sh` to restore the symlinks.
+
 ## Agents
 
 | Agent | Model | Role |
