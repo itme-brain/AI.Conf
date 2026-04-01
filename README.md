@@ -25,7 +25,7 @@ The script symlinks `agents/`, `skills/`, `CLAUDE.md`, and `settings.json` into 
 | `senior-worker` | opus | Escalation for architectural complexity or worker failures. |
 | `debugger` | sonnet | Diagnoses and fixes bugs with minimal targeted changes. |
 | `docs-writer` | sonnet | Writes and updates docs. Never modifies source code. |
-| `plan` | opus | Research-first planning. Produces implementation plans for workers. Read-only. |
+| `architect` | opus | Research-first planning. Produces implementation plans for workers. Read-only. |
 | `code-reviewer` | sonnet | Reviews diffs for quality, correctness, and coverage. Read-only. |
 | `security-auditor` | opus | Audits security-sensitive changes for vulnerabilities. Read-only. |
 | `karen` | opus | Independent fact-checker. Verifies worker output against source and web. Read-only, runs in background. |

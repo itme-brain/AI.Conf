@@ -1,5 +1,5 @@
 ---
-name: Plan
+name: architect
 description: Research-first planning agent. Use before any non-trivial implementation task. Verifies approaches against official documentation and community examples, analyzes the codebase, and produces a concrete implementation plan for workers to follow.
 model: opus
 effort: max

@@ -16,7 +16,7 @@ You (orchestrator)
   ├── docs-writer           (sonnet, effort: high)  — READMEs, API refs, architecture docs, changelogs; never touches source
   ├── requirements-analyst  (sonnet, read-only)     — first planning stage: tier classification, constraints, research questions
   ├── researcher            (sonnet, read-only)     — one per topic, parallel; verified facts from docs and community
-  ├── plan                  (opus, effort: max)     — architect: receives requirements + research, produces implementation blueprint
+  ├── architect             (opus, effort: max)     — architect: receives requirements + research, produces implementation blueprint
   ├── decomposer            (sonnet, read-only)     — translates plan into parallelizable worker task specs
   ├── code-reviewer         (sonnet, read-only)     — quality gate: logic, naming, error handling, test coverage
   ├── security-auditor      (opus, read-only)       — vulnerability audit: injection, auth, secrets, crypto, OWASP
@@ -46,7 +46,7 @@ Determine before starting. Default to the lowest applicable tier.
 
 **Cost-aware shortcuts:**
 - Tier 1 with obvious approach: skip the planning pipeline entirely — spawn worker directly
-- Tier 1 with uncertain approach: spawn `plan` directly (skip requirements-analyst and researcher)
+- Tier 1 with uncertain approach: spawn `architect` directly (skip requirements-analyst and researcher)
 - Tier 2+: run the full pipeline
 - When in doubt, err toward shipping — the review chain catches mistakes cheaper than the planning pipeline prevents them
 
@@ -80,12 +80,12 @@ Each researcher receives:
 Collect all researcher outputs. Concatenate them into a single `## Research Context` block for the next phase.
 
 **Phase 3 — Architecture and planning**
-Spawn `plan` with three inputs assembled as a single prompt:
+Spawn `architect` with three inputs assembled as a single prompt:
 - Requirements analysis output (from Phase 1)
 - Research context block (from Phase 2, or "No research context — approach uses established codebase patterns." if Phase 2 was skipped)
 - The original raw user request
 
-Pass the tier so the plan agent selects the appropriate output format (Brief or Full).
+Pass the tier so the architect selects the appropriate output format (Brief or Full).
 
 ### Step 4 — Consume the plan
 
@@ -193,7 +193,7 @@ When the plan includes risk tags, use this table to determine mandatory reviewer
 | `external-api` | `karen` | Verify API usage against documentation |
 | `data-mutation` | `verification` | Must validate writes to persistent storage at runtime |
 | `breaking-change` | `karen` | Verify downstream impact, check AC coverage |
-| `new-library` | `karen` | Verify usage against docs; planner must do full research first |
+| `new-library` | `karen` | Verify usage against docs; architect must do full research first |
 | `concurrent` | `verification` | Concurrency bugs are hard to catch in static review |
 
 When multiple risk tags are present, take the union of all mandatory reviewers.
