@@ -10,6 +10,10 @@ AGENTS_SRC="$SCRIPT_DIR/agents"
 SKILLS_SRC="$SCRIPT_DIR/skills"
 AGENTS_DST="$CLAUDE_DIR/agents"
 SKILLS_DST="$CLAUDE_DIR/skills"
+CLAUDE_MD_SRC="$SCRIPT_DIR/CLAUDE.md"
+CLAUDE_MD_DST="$CLAUDE_DIR/CLAUDE.md"
+SETTINGS_SRC="$SCRIPT_DIR/settings.json"
+SETTINGS_DST="$CLAUDE_DIR/settings.json"
 
 # Detect OS
 case "$(uname -s)" in
@@ -27,6 +31,7 @@ echo ""
 # Ensure ~/.claude exists
 mkdir -p "$CLAUDE_DIR"
 
+# Symlink a directory
 create_symlink() {
     local src="$1"
     local dst="$2"
@@ -69,8 +74,52 @@ create_symlink() {
     echo "Linked: $dst -> $src"
 }
 
-create_symlink "$AGENTS_SRC" "$AGENTS_DST" "agents"
-create_symlink "$SKILLS_SRC" "$SKILLS_DST" "skills"
+# Symlink a single file
+create_file_symlink() {
+    local src="$1"
+    local dst="$2"
+    local name="$3"
+
+    # Check if source exists
+    if [ ! -f "$src" ]; then
+        echo "ERROR: Source file not found: $src"
+        exit 1
+    fi
+
+    # Handle existing target
+    if [ -L "$dst" ]; then
+        echo "Removing existing symlink: $dst"
+        rm "$dst"
+    elif [ -f "$dst" ]; then
+        local backup="${dst}.backup.$(date +%Y%m%d%H%M%S)"
+        echo "Backing up existing $name to: $backup"
+        mv "$dst" "$backup"
+    fi
+
+    # Create symlink
+    if [ "$OS" = "windows" ]; then
+        local win_src
+        local win_dst
+        win_src="$(cygpath -w "$src")"
+        win_dst="$(cygpath -w "$dst")"
+        cmd //c "mklink \"$win_dst\" \"$win_src\"" > /dev/null 2>&1
+        if [ $? -ne 0 ]; then
+            echo "ERROR: mklink failed for $name."
+            echo "On Windows, enable Developer Mode (Settings > Update & Security > For Developers)"
+            echo "or run this script as Administrator."
+            exit 1
+        fi
+    else
+        ln -s "$src" "$dst"
+    fi
+
+    echo "Linked: $dst -> $src"
+}
+
+create_symlink      "$AGENTS_SRC"    "$AGENTS_DST"    "agents"
+create_symlink      "$SKILLS_SRC"    "$SKILLS_DST"    "skills"
+create_file_symlink "$CLAUDE_MD_SRC" "$CLAUDE_MD_DST" "CLAUDE.md"
+create_file_symlink "$SETTINGS_SRC"  "$SETTINGS_DST"  "settings.json"
 
 echo ""
-echo "Done. Run 'claude --agent kevin' to start."
+echo "Done. Open Claude Code and load the orchestrate skill to begin."

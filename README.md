@@ -1,71 +1,67 @@
 # agent-team
 
-A Claude Code agent team with structured orchestration, review, and git management.
+A portable Claude Code agent team configuration. Clone it, run `install.sh`, and your Claude Code sessions get a full team of specialized subagents and shared skills — on any machine.
 
-## Team structure
+## Quick install
 
+```bash
+git clone <repo-url> ~/Documents/Personal/projects/agent-team
+cd ~/Documents/Personal/projects/agent-team
+./install.sh
 ```
-User (invokes via `claude --agent kevin`)
-  └── Kevin (sonnet) ← PM and orchestrator
-        ├── Grunt (haiku) ← trivial tasks (Tier 0)
-        ├── Workers (sonnet) ← default implementers
-        ├── Senior Workers (opus) ← complex/architectural tasks
-        └── Karen (sonnet, background) ← independent reviewer, fact-checker
-```
+
+The script symlinks `agents/`, `skills/`, `CLAUDE.md`, and `settings.json` into `~/.claude/`. Works on Linux, macOS, and Windows (Git Bash).
 
 ## Agents
 
 | Agent | Model | Role |
 |---|---|---|
-| `kevin` | sonnet | PM — decomposes, delegates, validates, delivers. Never writes code. |
-| `worker` | sonnet | Default implementer. Runs in isolated worktree. |
+| `grunt` | haiku | Trivial tasks — typos, renames, one-liners. No planning or review. |
+| `worker` | sonnet | Default implementer for well-defined tasks. |
 | `senior-worker` | opus | Escalation for architectural complexity or worker failures. |
-| `grunt` | haiku | Lightweight worker for trivial one-liners. |
-| `karen` | sonnet | Independent reviewer and fact-checker. Read-only, runs in background. |
+| `debugger` | sonnet | Diagnoses and fixes bugs with minimal targeted changes. |
+| `docs-writer` | sonnet | Writes and updates docs. Never modifies source code. |
+| `plan` | opus | Research-first planning. Produces implementation plans for workers. Read-only. |
+| `code-reviewer` | sonnet | Reviews diffs for quality, correctness, and coverage. Read-only. |
+| `security-auditor` | opus | Audits security-sensitive changes for vulnerabilities. Read-only. |
+| `karen` | opus | Independent fact-checker. Verifies worker output against source and web. Read-only, runs in background. |
 
 ## Skills
 
-| Skill | Used by | Purpose |
-|---|---|---|
-| `conventions` | All agents | Coding conventions, commit format, quality priorities |
-| `worker-protocol` | Workers, Senior Workers | Output format, commit flow (RFR/LGTM/REVISE), feedback handling |
-| `qa-checklist` | Workers, Senior Workers | Self-validation checklist before returning output |
-| `project` | All agents | Instructs agents to check for and ingest `.claude/skills/project.md` if present |
+| Skill | Purpose |
+|---|---|
+| `orchestrate` | Orchestration framework — load on demand to decompose and delegate complex tasks |
+| `conventions` | Core coding conventions and quality priorities shared by all agents |
+| `worker-protocol` | Output format, feedback handling, and operational procedures for worker agents |
+| `qa-checklist` | Self-validation checklist workers run before returning results |
+| `project` | Instructs agents to check for and ingest a project-specific skill file before starting work |
 
-## Project-specific context
+## How to use
 
-To provide agents with project-specific instructions — architecture notes, domain conventions, tech stack details — create a `.claude/skills/project.md` file in your project repo. All agents will automatically check for and ingest it before starting work.
+In an interactive Claude Code session, load the orchestrate skill when a task is complex enough to warrant delegation:
 
-This file is yours to write and maintain. Commit it with the project so it's always present when the team is invoked.
-
-## Communication signals
-
-| Signal | Direction | Meaning |
-|---|---|---|
-| `RFR` | Worker → Kevin | Work complete, ready for review |
-| `LGTM` | Kevin → Worker | Approved, commit now |
-| `REVISE` | Kevin → Worker | Needs fixes (issues attached) |
-| `REVIEW` | Kevin → Karen | New review request |
-| `RE-REVIEW` | Kevin → Karen | Updated output after fixes |
-| `PASS` / `PASS WITH NOTES` / `FAIL` | Karen → Kevin | Review verdict |
-
-## Installation
-
-```bash
-# Clone the repo
-git clone <repo-url> ~/Documents/projects/agent-team
-cd ~/Documents/projects/agent-team
-
-# Run the install script (creates symlinks to ~/.claude/)
-./install.sh
+```
+/skill orchestrate
 ```
 
-The install script symlinks `agents/` and `skills/` into `~/.claude/`. Works on Windows, Linux, and macOS.
+Once loaded, Claude acts as orchestrator — decomposing tasks, selecting agents, reviewing output, and managing the git flow. Agents are auto-delegated based on task type; you don't invoke them directly.
 
-## Usage
+For simple tasks, agents can be invoked directly:
 
-```bash
-claude --agent kevin
+```
+/agent worker Fix the broken pagination in the user list endpoint
 ```
 
-Kevin handles everything from there — task tiers, worker dispatch, review, git management, and delivery.
+## Project-specific config
+
+Each project repo can extend the team with local config in `.claude/`:
+
+- `.claude/CLAUDE.md` — project-specific instructions (architecture notes, domain conventions, stack details)
+- `.claude/agents/` — project-local agent overrides or additions
+- `.claude/skills/project.md` — skill file that agents automatically ingest before starting work (see the `project` skill)
+
+Commit `.claude/` with the project so the team has context wherever it runs.
+
+## Agent memory
+
+Agents with `memory: project` scope write persistent memory to `.claude/agent-memory/` in the project directory. This memory is project-scoped and can be committed with the repo so future sessions pick up where prior ones left off.
