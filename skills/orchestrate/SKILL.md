@@ -71,7 +71,7 @@ Spawn `requirements-analyst` with the raw user request. It returns: restated pro
 If the requirements-analyst returns no research questions, skip Phase 2.
 
 **Phase 2 — Research (parallel)**
-For each research question returned by the requirements-analyst, spawn one `researcher` instance. Spawn all instances in the same response — they run in parallel.
+For each research question returned by the requirements-analyst, spawn one `researcher` instance. **All researchers must be spawned in a single response — dispatching them sequentially serializes the pipeline and defeats the purpose of parallel research.**
 
 Each researcher receives:
 - The specific research question (topic + why needed + where to look)
