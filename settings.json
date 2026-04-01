@@ -1,0 +1,48 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash",
+      "Read",
+      "Edit",
+      "Write",
+      "Glob",
+      "Grep",
+      "WebFetch",
+      "WebSearch"
+    ],
+    "ask": [
+      "Bash(rm *)",
+      "Bash(rmdir *)",
+      "Bash(git push --force*)",
+      "Bash(git push -f *)",
+      "Bash(git reset --hard*)",
+      "Bash(git clean *)",
+      "Bash(chmod *)",
+      "Bash(dd *)",
+      "Bash(mkfs*)",
+      "Bash(shred *)",
+      "Bash(kill *)",
+      "Bash(killall *)",
+      "Bash(sudo *)"
+    ],
+    "defaultMode": "acceptEdits",
+    "deny": [
+      "Read(~/.ssh/**)",
+      "Read(~/.aws/**)",
+      "Read(~/.gnupg/**)",
+      "Read(./.env)",
+      "Read(./.env.*)"
+    ]
+  },
+  "model": "sonnet",
+  "enabledPlugins": {
+    "rust-analyzer-lsp@claude-plugins-official": true
+  },
+  "effortLevel": "medium",
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "includeGitInstructions": true,
+  "autoUpdatesChannel": "stable"
+}
