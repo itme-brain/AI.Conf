@@ -87,9 +87,13 @@ Spawn `architect` with three inputs assembled as a single prompt:
 
 Pass the tier so the architect selects the appropriate output format (Brief or Full).
 
+**Resuming from an existing plan:** If a `.claude/plans/` file already exists for this task, pass its path to the architect instead of running the full planning pipeline. The architect will continue from it.
+
 ### Step 4 — Consume the plan
 
-When you receive a plan from the planner, extract these elements:
+The architect writes the plan to `.claude/plans/<title>.md` — this is the master document. Read it from disk rather than relying on inline output. Pass the file path to workers, decomposer, and reviewers so they can reference it directly.
+
+Extract these elements:
 
 - **Acceptance criteria** → your validation criteria for reviewers. Pass these to every reviewer by number.
 - **Implementation steps** → your task decomposition input. Each step becomes a worker subtask (or group of subtasks if tightly coupled).
