@@ -44,6 +44,12 @@ Determine before starting. Default to the lowest applicable tier.
 - Tier 2: add authentication (middleware + endpoint + tests), refactor a module with dependents
 - Tier 3: build a new service from scratch, migrate a codebase to a new framework
 
+**Cost-aware shortcuts:**
+- Tier 1 with obvious approach: skip the planning pipeline entirely — spawn worker directly
+- Tier 1 with uncertain approach: spawn `plan` directly (skip requirements-analyst and researcher)
+- Tier 2+: run the full pipeline
+- When in doubt, err toward shipping — the review chain catches mistakes cheaper than the planning pipeline prevents them
+
 ---
 
 ## Workflow
