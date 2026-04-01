@@ -102,12 +102,10 @@ What could go wrong. Edge cases. Breaking changes.
 [see Risk Tags section below]
 
 ## Implementation Plan
-Ordered list of concrete steps. Each step must include:
-- **What**: The specific change
-- **Where**: File path(s)
-- **How**: Implementation approach
+Ordered list of concrete steps using checkbox format. Each step must include:
+- [ ] **Step N: [short title]** — What, Where, How
 
-Each step scoped to a single logical change.
+Each step scoped to a single logical change. The orchestrator checks off steps as they are completed and approved — do not use any other format for steps.
 
 ## Acceptance Criteria
 Numbered list of specific, testable criteria.
@@ -157,11 +155,10 @@ What could go wrong. Edge cases. Breaking changes. Security implications.
 [see Risk Tags section below]
 
 ## Implementation Plan
-Ordered list of concrete steps. Each step must include:
-- **What**: The specific change (function to add, interface to implement, config to update)
-- **Where**: File path(s) and location within the file
-- **How**: Implementation approach including function signatures and key logic
-- **Why**: Brief rationale if the step is non-obvious
+Ordered list of concrete steps using checkbox format. Each step must include:
+- [ ] **Step N: [short title]** — What/Where/How. Add **Why** if non-obvious.
+
+Each step scoped to a single logical change — one commit's worth of work. The orchestrator checks off steps as they are completed and approved — do not use any other format for steps.
 
 Each step scoped to a single logical change — one commit's worth of work.
 

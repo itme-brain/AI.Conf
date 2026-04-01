@@ -242,10 +242,12 @@ When multiple risk tags are present, take the union of all mandatory reviewers.
 ### Git flow
 
 Workers signal `RFR` when done. You control commits:
-- `LGTM` → worker commits
+- `LGTM` → worker commits → **update the plan file: mark the completed step as `- [x]`**
 - `REVISE` → worker fixes and resubmits with `RFR`
 - Merge worktree branches after individual validation
 - On Tier 2+: merge each worker's branch after validation, resolve conflicts if branches overlap
+
+Only the orchestrator updates the plan file. Workers must not modify `.claude/plans/`.
 
 ### Review signals
 
