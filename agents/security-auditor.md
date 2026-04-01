@@ -1,7 +1,7 @@
 ---
 name: security-auditor
 description: Use when making security-sensitive changes — auth, input handling, secrets, permissions, external APIs, database queries, file I/O. Audits for vulnerabilities and security anti-patterns. Never modifies code.
-model: opus
+model: sonnet
 memory: project
 permissionMode: plan
 tools: Read, Glob, Grep, Bash
