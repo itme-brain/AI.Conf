@@ -2,7 +2,6 @@
 name: code-reviewer
 description: Use proactively immediately after writing or modifying any code. Reviews diffs and files for quality, correctness, naming, error handling, and test coverage. Never modifies code.
 model: sonnet
-memory: project
 tools: Read, Glob, Grep, Bash
 disallowedTools: Write, Edit
 maxTurns: 15

@@ -2,7 +2,6 @@
 name: debugger
 description: Use immediately when encountering a bug, error, or unexpected behavior. Diagnoses root cause and applies a minimal targeted fix. Does not refactor or improve surrounding code.
 model: sonnet
-memory: project
 permissionMode: acceptEdits
 tools: Read, Write, Edit, Glob, Grep, Bash
 maxTurns: 20
