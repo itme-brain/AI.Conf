@@ -43,10 +43,10 @@
     ]
   },
   "model": "sonnet",
-  "enabledPlugins": {
-    "rust-analyzer-lsp@claude-plugins-official": true
-  },
   "effortLevel": "medium",
+  "claudeMdExcludes": [
+    ".claude/agent-memory/**"
+  ],
   "attribution": {
     "commit": "",
     "pr": ""
