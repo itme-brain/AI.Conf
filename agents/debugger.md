@@ -9,6 +9,7 @@ skills:
   - conventions
   - worker-protocol
   - message-schema
+  - qa-checklist
   - project
 ---
 

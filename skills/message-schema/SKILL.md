@@ -90,8 +90,7 @@ ac_coverage:
 ---
 ```
 
-Required: `type`, `signal`, `critical_count`, `ac_coverage`
-Optional: `moderate_count`, `minor_count`
+Required: `type`, `signal`, `critical_count`, `moderate_count`, `minor_count`, `ac_coverage`
 
 **Hard rule:** `critical_count > 0` requires `signal: fail`.
 
@@ -153,7 +152,6 @@ Emitted by: architect (Phase 2)
 type: plan_result
 signal: plan_complete | blocked
 plan_file: .claude/plans/kebab-case-title.md
-format: brief | full
 wave_count: 3
 step_count: 7
 risk_tags:
@@ -163,8 +161,8 @@ has_blockers: false
 ---
 ```
 
-Required: `type`, `signal`, `plan_file`, `wave_count`, `risk_tags`
-Optional: `format`, `step_count`, `has_blockers`
+Required: `type`, `signal`, `plan_file`, `wave_count`, `risk_tags`, `has_blockers`
+Optional: `step_count`
 
 **Routing:** `has_blockers: true` triggers user escalation before worker dispatch.
 

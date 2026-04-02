@@ -104,7 +104,6 @@ After writing the plan file, return a `plan_result` envelope:
 type: plan_result
 signal: plan_complete | blocked
 plan_file: .claude/plans/kebab-case-title.md
-format: brief | full
 wave_count: 3
 step_count: 7
 risk_tags:

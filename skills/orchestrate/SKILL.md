@@ -228,7 +228,8 @@ All agent communication uses typed YAML frontmatter envelopes defined in the `me
 | `signal: triage_complete` | architect → you | Check `research_needed`, spawn researchers or resume architect |
 | `signal: plan_complete` | architect → you | Read plan file, begin wave dispatch |
 | `signal: research_complete` | researcher → you | Collect, assemble into Research Context |
-| `signal: blocked` | architect/worker → you | If from `plan_result`: escalate to user before dispatching workers. Otherwise: investigate or unblock. |
+| `signal: blocked` (`plan_result`) | architect → you | Escalate to user before dispatching workers |
+| `signal: blocked` (`worker_submission`) | worker → you | Investigate blocker, unblock or reassign |
 | `signal: escalate` | any → you | Escalate to user with context |
 
 When dispatching agents, use the orchestrator→agent envelope types (`task_assignment`, `revision_request`, `approval`, `triage_request`, `architecture_request`, `research_request`) from the message-schema skill.

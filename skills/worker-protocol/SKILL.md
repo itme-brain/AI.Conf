@@ -51,7 +51,7 @@ Before returning your output, run the `qa-checklist` skill against your work. Fi
 
 ## Commits
 
-Do not commit until your orchestrator sends `signal: lgtm`. Your output envelope's `signal: rfr` replaces the old freetext `RFR` — the envelope IS the signal.
+Do not commit until your orchestrator sends `signal: lgtm`.
 
 - `signal: rfr` — you → orchestrator: work complete, ready for review
 - `signal: lgtm` — orchestrator → you: approved, commit now

@@ -48,6 +48,7 @@ Before returning your output, validate against every item below. If you find a v
 - Are hard rules satisfied?
   - `review_verdict`: `critical_count > 0` requires `signal: fail`
   - `audit_verdict`: `security_findings.critical > 0` or `build_status: fail` or `test_status: fail` requires `signal: fail`
+  - `plan_result`: `has_blockers: true` requires orchestrator escalation to user before worker dispatch
 
 ## After validation
 
