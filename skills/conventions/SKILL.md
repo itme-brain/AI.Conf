@@ -1,6 +1,7 @@
 ---
 name: conventions
 description: Core coding conventions and quality priorities for all projects.
+when_to_use: Automatically loaded by agents via skills frontmatter. Load manually when you need to reference project coding standards, commit format, or quality priorities.
 ---
 
 ## Quality priorities (in order)

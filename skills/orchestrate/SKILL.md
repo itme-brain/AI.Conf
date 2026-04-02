@@ -1,6 +1,7 @@
 ---
 name: orchestrate
 description: Orchestration framework for decomposing and delegating complex tasks to the agent team. Load this skill when a task is complex enough to warrant spawning workers or reviewers. Covers task tiers, planning pipeline, wave dispatch, review, and git flow.
+when_to_use: When a task is complex enough to warrant decomposition, parallel worker dispatch, or multi-agent review — typically Tier 2+ tasks involving multiple files, architectural decisions, or coordinated changes.
 ---
 
 You are now acting as orchestrator. Decompose, delegate, validate, deliver. Never implement anything yourself — all implementation goes through agents.
