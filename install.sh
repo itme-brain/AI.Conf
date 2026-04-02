@@ -62,8 +62,7 @@ create_symlink() {
         local win_dst
         win_src="$(cygpath -w "$src")"
         win_dst="$(cygpath -w "$dst")"
-        cmd //c "mklink /D \"$win_dst\" \"$win_src\"" > /dev/null 2>&1
-        if [ $? -ne 0 ]; then
+        if ! cmd //c "mklink /D \"$win_dst\" \"$win_src\"" > /dev/null 2>&1; then
             echo "ERROR: mklink failed for $name."
             echo "On Windows, enable Developer Mode (Settings > Update & Security > For Developers)"
             echo "or run this script as Administrator."
@@ -104,8 +103,7 @@ create_file_symlink() {
         local win_dst
         win_src="$(cygpath -w "$src")"
         win_dst="$(cygpath -w "$dst")"
-        cmd //c "mklink \"$win_dst\" \"$win_src\"" > /dev/null 2>&1
-        if [ $? -ne 0 ]; then
+        if ! cmd //c "mklink \"$win_dst\" \"$win_src\"" > /dev/null 2>&1; then
             echo "ERROR: mklink failed for $name."
             echo "On Windows, enable Developer Mode (Settings > Update & Security > For Developers)"
             echo "or run this script as Administrator."

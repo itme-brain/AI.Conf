@@ -41,7 +41,7 @@ Produce the assigned deliverable. Accurately. Completely. Nothing more.
 
 ## Self-QA
 
-Before returning your output, run the `qa-checklist` skill against your work. Fix any issues you find — don't just note them. Your Self-Assessment must include the `QA self-check: pass/fail` line. If you can't pass your own QA, flag what remains and why.
+Before returning your output, run the `qa-checklist` skill against your work. Fix any issues you find — don't just note them. Set `qa_check: pass` or `qa_check: fail` in your frontmatter envelope. If you can't pass your own QA, flag what remains and why in your Self-Assessment.
 
 ## Cost sensitivity
 
