@@ -1,5 +1,10 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "includeGitInstructions": true,
   "permissions": {
     "allow": [
       "Bash",
@@ -10,6 +15,20 @@
       "Grep",
       "WebFetch",
       "WebSearch"
+    ],
+    "deny": [
+      "Read(~/.ssh/**)",
+      "Read(~/.aws/**)",
+      "Read(~/.gnupg/**)",
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Bash(cat ~/.ssh/*)",
+      "Bash(cat ~/.aws/*)",
+      "Bash(cat ~/.gnupg/*)",
+      "Bash(cat .env*)",
+      "Bash(less ~/.ssh/*)",
+      "Bash(less ~/.aws/*)",
+      "Bash(less ~/.gnupg/*)"
     ],
     "ask": [
       "Bash(rm *)",
@@ -26,31 +45,13 @@
       "Bash(killall *)",
       "Bash(sudo *)"
     ],
-    "defaultMode": "acceptEdits",
-    "deny": [
-      "Read(~/.ssh/**)",
-      "Read(~/.aws/**)",
-      "Read(~/.gnupg/**)",
-      "Read(./.env)",
-      "Read(./.env.*)",
-      "Bash(cat ~/.ssh/*)",
-      "Bash(cat ~/.aws/*)",
-      "Bash(cat ~/.gnupg/*)",
-      "Bash(cat .env*)",
-      "Bash(less ~/.ssh/*)",
-      "Bash(less ~/.aws/*)",
-      "Bash(less ~/.gnupg/*)"
-    ]
+    "defaultMode": "acceptEdits"
   },
   "model": "sonnet",
+  "syntaxHighlightingDisabled": false,
   "effortLevel": "medium",
+  "autoUpdatesChannel": "stable",
   "claudeMdExcludes": [
     ".claude/agent-memory/**"
-  ],
-  "attribution": {
-    "commit": "",
-    "pr": ""
-  },
-  "includeGitInstructions": true,
-  "autoUpdatesChannel": "stable"
+  ]
 }
