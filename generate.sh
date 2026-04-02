@@ -81,10 +81,10 @@ expand_body() {
 map_model() {
     local model="$1"
     case "$model" in
-        opus)   echo "o3" ;;
-        sonnet) echo "o4-mini" ;;
-        haiku)  echo "o4-mini" ;;
-        *)      echo "o4-mini" ;;
+        opus)   echo "gpt-5.4" ;;
+        sonnet) echo "gpt-5.3-codex" ;;
+        haiku)  echo "gpt-5.1-codex-mini" ;;
+        *)      echo "gpt-5.3-codex" ;;
     esac
 }
 
@@ -97,7 +97,7 @@ map_effort() {
         low)    echo "low" ;;
         medium) echo "medium" ;;
         high)   echo "high" ;;
-        max)    echo "xhigh" ;;
+        max)    echo "extra high" ;;
         *)      echo "medium" ;;
     esac
 }
@@ -277,7 +277,7 @@ TOML
     esac
 
     cat > "$CODEX_DIR/config.toml" <<TOML
-model = "o4-mini"
+model = "gpt-5.3-codex"
 model_reasoning_effort = "medium"
 sandbox_mode = "${config_sandbox}"
 approval_policy = "on-request"

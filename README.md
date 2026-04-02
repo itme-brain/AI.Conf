@@ -87,9 +87,9 @@ nix develop              # enter devShell with yq + envsubst
 
 | Claude Code | Codex CLI |
 |---|---|
-| `opus` | `o3` |
-| `sonnet` | `o4-mini` |
-| `haiku` | `o4-mini` |
+| `opus` | `gpt-5.4` |
+| `sonnet` | `gpt-5.3-codex` |
+| `haiku` | `gpt-5.1-codex-mini` |
 
 ### Template variables
 
