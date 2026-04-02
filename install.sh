@@ -128,20 +128,17 @@ create_symlink      "$RULES_SRC"     "$RULES_DST"     "rules"
 create_file_symlink "$CLAUDE_MD_SRC" "$CLAUDE_MD_DST" "CLAUDE.md"
 create_file_symlink "$SETTINGS_SRC"  "$SETTINGS_DST"  "settings.json"
 
-# Codex CLI integration (optional — only if ~/.codex exists)
+# Codex CLI integration (optional — only if codex/ output exists)
 CODEX_DIR="$HOME/.codex"
 
-if [ -d "$CODEX_DIR" ]; then
+if [ -d "$SCRIPT_DIR/codex" ]; then
     echo ""
-    echo "Codex CLI detected at $CODEX_DIR"
-
-    # Warn if generated codex/ output is missing
-    if [ ! -d "$SCRIPT_DIR/codex" ]; then
-        echo "Warning: codex/ not found. Run ./generate.sh first to generate Codex output."
-    fi
+    echo "Codex output found — installing to $CODEX_DIR"
+    mkdir -p "$CODEX_DIR"
 
     # Skills: symlink each skill directory into ~/.codex/skills/
     # (Can't replace the whole directory — .system/ must remain intact)
+    mkdir -p "$CODEX_DIR/skills"
     for skill_dir in "$SKILLS_SRC"/*/; do
         skill_name="$(basename "$skill_dir")"
         create_symlink "$skill_dir" "$CODEX_DIR/skills/$skill_name" "codex skill: $skill_name"
