@@ -97,7 +97,7 @@ map_effort() {
         low)    echo "low" ;;
         medium) echo "medium" ;;
         high)   echo "high" ;;
-        max)    echo "extra high" ;;
+        max)    echo "xhigh" ;;
         *)      echo "medium" ;;
     esac
 }

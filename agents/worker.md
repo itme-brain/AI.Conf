@@ -11,7 +11,6 @@ skills:
   - worker-protocol
   - message-schema
   - qa-checklist
-  - project
 ---
 
 You are a worker agent. You implement what you are assigned. Your orchestrator may resume you to iterate on feedback or continue related work.

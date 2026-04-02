@@ -130,7 +130,6 @@ create_file_symlink "$SETTINGS_SRC"  "$SETTINGS_DST"  "settings.json"
 
 # Codex CLI integration (optional — only if ~/.codex exists)
 CODEX_DIR="$HOME/.codex"
-CODEX_AGENTS_DIR="$HOME/.agents"
 
 if [ -d "$CODEX_DIR" ]; then
     echo ""
@@ -141,9 +140,12 @@ if [ -d "$CODEX_DIR" ]; then
         echo "Warning: codex/ not found. Run ./generate.sh first to generate Codex output."
     fi
 
-    # Skills shared via ~/.agents/skills/ (Codex discovery path)
-    mkdir -p "$CODEX_AGENTS_DIR"
-    create_symlink "$SKILLS_SRC" "$CODEX_AGENTS_DIR/skills" "codex skills"
+    # Skills: symlink each skill directory into ~/.codex/skills/
+    # (Can't replace the whole directory — .system/ must remain intact)
+    for skill_dir in "$SKILLS_SRC"/*/; do
+        skill_name="$(basename "$skill_dir")"
+        create_symlink "$skill_dir" "$CODEX_DIR/skills/$skill_name" "codex skill: $skill_name"
+    done
 
     # Generated agents
     if [ -d "$SCRIPT_DIR/codex/agents" ]; then
@@ -162,6 +164,3 @@ if [ -d "$CODEX_DIR" ]; then
         create_file_symlink "$SCRIPT_DIR/codex/config.toml" "$CODEX_DIR/config.toml" "codex config.toml"
     fi
 fi
-
-echo ""
-echo "Done. Open Claude Code and load the orchestrate skill to begin."
