@@ -5,8 +5,8 @@ A portable Claude Code agent team configuration. Clone it, run `install.sh`, and
 ## Quick install
 
 ```bash
-git clone <repo-url> ~/Documents/Personal/projects/agent-team
-cd ~/Documents/Personal/projects/agent-team
+git clone <repo-url> ~/agent-team
+cd ~/agent-team
 ./install.sh
 ```
 
