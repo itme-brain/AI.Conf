@@ -3,6 +3,7 @@ name: worker
 description: Universal implementer. Handles all task tiers — trivial to architectural. Model is scaled by the orchestrator based on task complexity (haiku for trivial, sonnet for standard, opus for architectural/ambiguous). Default implementer for all implementation work.
 model: sonnet
 permissionMode: acceptEdits
+isolation: worktree
 tools: Read, Write, Edit, Glob, Grep, Bash
 maxTurns: 25
 skills:
