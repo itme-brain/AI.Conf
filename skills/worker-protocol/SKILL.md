@@ -54,6 +54,6 @@ If blocked (tool failure, missing file, build error): try to work around it and 
 
 ## Receiving reviewer feedback
 
-Your orchestrator may resume you with findings from Karen (analytical review) or Verification (runtime/test review), or both.
+Your orchestrator may resume you with findings from the reviewer (code quality + AC verification) or the auditor (security + runtime validation), or both.
 
-You already have the task context and your previous work. Address the issues specified. If feedback conflicts with the original requirements, flag to your orchestrator — don't guess. Resubmit complete output in standard format. In Self-Assessment, note which issues you addressed and reference the reviewer (Karen / Verification) for each.
+You already have the task context and your previous work. Address the issues specified. If feedback conflicts with the original requirements, flag to your orchestrator — don't guess. Resubmit complete output in standard format. In Self-Assessment, note which issues you addressed and reference the reviewer or auditor for each.

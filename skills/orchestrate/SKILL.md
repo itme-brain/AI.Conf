@@ -83,7 +83,7 @@ If the plan flags unresolved blockers or unverified assumptions, escalate to the
 
 For each wave in the plan:
 
-1. **Spawn ALL workers in the wave in a single response.** This is not optional — it is a cost and performance requirement. Parallel workers share the same cached context prefix at ~10% token cost. Serializing independent workers wastes both money and time.
+1. **Spawn ALL workers in the wave in a single response.** This is not optional — it is a performance requirement. Parallel agents run concurrently, reducing wall-clock time proportional to the number of agents. Serializing independent workers wastes time linearly.
 
 2. Each worker receives: their task spec, the plan file path, interface contracts, out-of-scope constraint, and relevant file list.
 
@@ -184,13 +184,19 @@ When multiple risk tags are present, take the union. Spawn all required reviewer
 **documenter**
 - Spawn after implementation wave is complete. Background. One instance per completed scope area.
 
+### Permission model
+
+Agent `permissionMode` in frontmatter is overridden when the parent (you, the orchestrator) runs in `acceptEdits` or `bypassPermissions` mode — the child inherits the parent's mode. This means `permissionMode: plan` on read-only agents like architect, researcher, and reviewer is **not enforced at runtime**.
+
+The actual write protection for read-only agents comes from `disallowedTools: Write, Edit` — this is enforced regardless of permission mode. Do not rely on `permissionMode` as a safety boundary; rely on tool restrictions.
+
 ### Parallelism mandate
 
 **Same-wave workers must be spawned in a single response.**
 **Reviewer and auditor must be spawned in a single response.**
 **All researchers must be spawned in a single response.**
 
-Spawning agents sequentially when they could run in parallel is a protocol violation, not a style choice. Parallel agents share a cached context prefix — each additional parallel agent costs ~10% of what the first agent paid for that shared context.
+Spawning agents sequentially when they could run in parallel is a protocol violation, not a style choice. Parallel dispatch reduces wall-clock latency proportionally — N agents in parallel complete in the time of the slowest, not the sum of all.
 
 ### Git flow
 
