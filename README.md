@@ -1,4 +1,4 @@
-# agent-team
+# AI.conf
 
 A portable agent team configuration for Claude Code and Codex CLI. Clone it, run the flake entrypoints or the `just` wrapper, and both tools get a full team of specialized subagents and shared skills on any machine.
 
