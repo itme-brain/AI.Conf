@@ -254,7 +254,7 @@ TOML
         echo "# Agent Team Instructions"
         echo ""
         echo "Agent-team specific protocols live in skills (orchestrate, conventions, worker-protocol, qa-checklist, message-schema, project)."
-        for rules_file in $(ls "$RULES_DIR"/*.md | sort); do
+        for rules_file in "$RULES_DIR"/*.md; do
             echo ""
             cat "$rules_file"
         done

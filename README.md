@@ -79,7 +79,7 @@ nix develop              # enter devShell with yq + envsubst
 |---|---|---|
 | `agents/*.md` (templates) | `claude/agents/*.md` | `~/.claude/agents/` |
 | `agents/*.md` (templates) | `codex/agents/*.toml` | `~/.codex/agents/` |
-| `CLAUDE.md` + `rules/*.md` | `codex/AGENTS.md` | `~/.codex/AGENTS.md` |
+| `rules/*.md` | `codex/AGENTS.md` | `~/.codex/AGENTS.md` |
 | `settings.json` | `codex/config.toml` | `~/.codex/config.toml` |
 | `skills/` | (shared as-is) | `~/.claude/skills/` + `~/.agents/skills/` |
 

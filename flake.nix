@@ -7,7 +7,11 @@
     in {
       devShells = forAllSystems (pkgs: {
         default = pkgs.mkShell {
-          packages = [ pkgs.yq-go pkgs.gettext pkgs.codex ];
+          packages = with pkgs; [
+            yq-go
+            gettext
+            codex
+          ];
         };
       });
     };
