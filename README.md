@@ -1,22 +1,46 @@
 # agent-team
 
-A portable agent team configuration for Claude Code and Codex CLI. Clone it, run `./generate.sh` + `./install.sh`, and both tools get a full team of specialized subagents and shared skills — on any machine.
+A portable agent team configuration for Claude Code and Codex CLI. Clone it, run the flake entrypoints or the `just` wrapper, and both tools get a full team of specialized subagents and shared skills on any machine.
 
 ## Quick install
 
 ```bash
-git clone <repo-url> ~/agent-team
-cd ~/agent-team
+git clone <repo-url>
+cd agent-team
 nix develop              # enter devShell with yq + envsubst
-./generate.sh            # generate Claude + Codex config from templates
-./install.sh             # symlinks into ~/.claude/ and ~/.codex/ (if present)
+nix run .#check          # validate protocols + generate artifacts
+nix run .#install        # install into your Claude/Codex config dirs
 ```
 
-`generate.sh` expands shared agent templates into tool-specific outputs for Claude Code and Codex CLI. `install.sh` symlinks the results into `~/.claude/` and `~/.codex/`. Works on Linux, macOS, and Windows (Git Bash).
+The supported user-facing entrypoints are the flake apps and the `just` wrapper. `generate.sh` and `install.sh` remain the internal implementation layer behind them. Works on Linux, macOS, and Windows (Git Bash).
+
+## Nix entrypoints
+
+The flake exposes formal workflow entrypoints:
+
+```bash
+nix run .#validate   # syntax + protocol presence/basic shape checks
+nix run .#build      # generate settings.json + claude/ + codex/
+nix run .#check      # validate + build
+nix run .#install    # run install.sh
+nix flake check      # run flake checks (validate + build in sandboxed check derivations)
+```
+
+`just` is also supported as a convenience wrapper over those same flake commands:
+
+```bash
+just validate
+just build
+just check
+just install
+just clean          # removes generated artifacts: settings.json + claude/ + codex/
+```
+
+`generate.sh` and `install.sh` are kept as internal implementation details for portability and debugging, but they are no longer the primary documented workflow.
 
 ## Maintenance
 
-**Symlink fragility:** `~/.claude/CLAUDE.md` and `~/.claude/settings.json` are installed as symlinks by `install.sh`. Some tools (including Claude Code itself when writing settings) resolve symlinks to regular files on write, silently breaking the link. If edits to the repo are no longer reflected in `~/.claude/`, re-run `./install.sh` to restore the symlinks.
+**Symlink fragility:** the generated Claude files are installed as symlinks by `install.sh`. Some tools (including Claude Code itself when writing settings) resolve symlinks to regular files on write, silently breaking the link. If edits to the repo are no longer reflected in your Claude config dir, re-run `./install.sh` to restore the symlinks.
 
 ## Agents
 
@@ -43,7 +67,7 @@ nix develop              # enter devShell with yq + envsubst
 
 ## Rules
 
-Global instructions are modularized in `rules/` and auto-loaded by Claude Code from `~/.claude/rules/` on every session. Each file covers a focused topic (git workflow, Nix preferences, response style, etc.). Agent-team specific protocols live in skills, not rules.
+Global instructions are modularized in `rules/` and auto-loaded by Claude Code from the installed Claude config on every session. Each file covers a focused topic (git workflow, Nix preferences, response style, etc.). Agent-team specific protocols live in skills, not rules.
 
 ## How to use
 
@@ -65,7 +89,7 @@ For simple tasks, invoke an agent directly:
 
 ### Codex CLI
 
-Agents are available as named agents in `~/.codex/agents/`. Invoke them with:
+Agents are available as named agents in the installed Codex config. Invoke them with:
 
 ```
 codex --agent worker "Fix the broken pagination in the user list endpoint"
@@ -73,17 +97,112 @@ codex --agent worker "Fix the broken pagination in the user list endpoint"
 
 ## Dual-target generation
 
-Agent source files in `agents/` are the single source of truth. `generate.sh` derives tool-specific outputs for both Claude Code and [OpenAI Codex CLI](https://github.com/openai/codex).
+This repo uses two authored protocol files:
+
+- [SETTINGS.yaml](SETTINGS.yaml) for runtime policy (filesystem, approvals, network, model intent)
+- [TEAM.yaml](TEAM.yaml) for team inventory metadata (agents, skills, rules)
+
+Long-form instructions remain authored in Markdown (`agents/*.md`, `skills/*/SKILL.md`, `rules/*.md`).
+
+Runtime policy is documented in [spec/agent-runtime-v1.md](spec/agent-runtime-v1.md) and described by [schemas/agent-runtime.schema.json](schemas/agent-runtime.schema.json). Team inventory is documented in [spec/team-protocol-v1.md](spec/team-protocol-v1.md). `generate.sh` derives tool-specific outputs for both Claude Code and [OpenAI Codex CLI](https://github.com/openai/codex).
 
 ### What gets generated
 
 | Source | Generated | Location |
 |---|---|---|
-| `agents/*.md` (templates) | `claude/agents/*.md` | `~/.claude/agents/` |
-| `agents/*.md` (templates) | `codex/agents/*.toml` | `~/.codex/agents/` |
-| `rules/*.md` | `codex/AGENTS.md` | `~/.codex/AGENTS.md` |
-| `settings.json` | `codex/config.toml` | `~/.codex/config.toml` |
-| `skills/` | (shared as-is) | `~/.claude/skills/` + `~/.agents/skills/` |
+| `TEAM.yaml` + `agents/*.md` | `claude/agents/*.md` | Claude config dir |
+| `TEAM.yaml` + `agents/*.md` | `codex/agents/*.toml` | Codex config dir |
+| `SETTINGS.yaml` | `settings.json` (compatibility artifact, generated) | repo root |
+| `SETTINGS.yaml` | `claude/settings.json` | Claude config dir |
+| `SETTINGS.yaml` | `codex/config.toml` | Codex config dir |
+| `TEAM.yaml` + `rules/*.md` | `codex/AGENTS.md` | Codex config dir |
+| `TEAM.yaml` + `skills/*/SKILL.md` | installed skill dirs | installed skill dirs |
+
+All final config files are generated artifacts. The authored protocol sources are `SETTINGS.yaml`, `TEAM.yaml`, and Markdown instruction content. The primary workflows are `nix run .#build` / `nix run .#install` or the equivalent `just` commands.
+
+Narrow compatibility caveats:
+
+- TEAM schema is intentionally rigid/repo-specific in v1. Inventory changes require schema updates in lockstep.
+- Claude generated agent frontmatter is normalized by generator serialization (field order/quoting), which may produce non-semantic diffs.
+- Codex skill installation is TEAM-authoritative when `TEAM.yaml` is present. Legacy directory fallback is used only when TEAM is absent or unparseable.
+
+Shared runtime intent is generated conservatively across tools:
+
+| Shared source | Claude Code | Codex CLI |
+|---|---|---|
+| `runtime.filesystem = read-only` | `permissions.defaultMode = "plan"` | `sandbox_mode = "read-only"` |
+| `runtime.filesystem = workspace-write` | `permissions.defaultMode = "acceptEdits"` | `sandbox_mode = "workspace-write"` |
+| `runtime.approval = manual` | partially represented | `approval_policy = "on-request"` |
+| `runtime.approval = guarded-auto` | partially represented | `approval_policy = "untrusted"` |
+| `runtime.approval = full-auto` | partially represented | `approval_policy = "never"` |
+
+Codex does not support Claude's per-tool `allow` / `deny` / `ask` patterns directly. The shared protocol keeps the intent portable, then adapters derive the closest target behavior. Use target-specific fields only where there is no shared equivalent:
+
+```yaml
+targets:
+  codex:
+    approval_policy: untrusted
+    network_access: false
+  claude:
+    claude_md_excludes:
+      - .claude/agent-memory/**
+```
+
+## Shared protocol
+
+The protocol source is YAML because it is easier to read and annotate than JSON or TOML while still being easy to validate with JSON Schema.
+
+- Runtime policy: [SETTINGS.yaml](SETTINGS.yaml)
+- Runtime schema: [schemas/agent-runtime.schema.json](schemas/agent-runtime.schema.json)
+- Runtime spec: [spec/agent-runtime-v1.md](spec/agent-runtime-v1.md)
+- Team/inventory spec: [spec/team-protocol-v1.md](spec/team-protocol-v1.md)
+
+The protocol is intentionally small in v1:
+
+- portable model tier and reasoning level
+- filesystem access intent
+- approval intent
+- network access
+- portable tool classes
+- protected paths
+- dangerous shell command prompts
+- limited target-specific escape hatches
+
+Example:
+
+```yaml
+version: 1
+
+model:
+  class: balanced
+  reasoning: medium
+
+runtime:
+  filesystem: workspace-write
+  approval: guarded-auto
+  network_access: false
+  tools:
+    - shell
+    - read
+    - edit
+    - write
+    - glob
+    - grep
+    - web_fetch
+    - web_search
+
+safety:
+  protected_paths:
+    - ~/.ssh/**
+    - ~/.aws/**
+    - ~/.gnupg/**
+    - "**/.env*"
+  dangerous_shell_commands:
+    ask:
+      - rm *
+      - git reset --hard*
+      - sudo *
+```
 
 ## Model mapping
 
