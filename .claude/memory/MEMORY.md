@@ -1,0 +1,5 @@
+# Project Memory
+
+Index of persistent memory for the agent-team project.
+
+- [TODO: inter-agent JSON schema](todo_inter_agent_schema.md) — formal typed schema for all inter-agent messages to replace freetext signals
