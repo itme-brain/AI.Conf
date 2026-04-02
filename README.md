@@ -69,6 +69,11 @@ Each project repo can extend the team with local config in `.claude/`:
 
 Commit `.claude/` with the project so the team has context wherever it runs.
 
-## Agent memory
+## Memory
 
-Agents with `memory: project` scope write persistent memory to `.claude/agent-memory/` in the project directory. This memory is project-scoped and can be committed with the repo so future sessions pick up where prior ones left off.
+Two memory systems coexist:
+
+- **Manual memory** (`.claude/memory/`) — curated context files with YAML frontmatter, indexed by `MEMORY.md`. Loaded as part of the CLAUDE.md hierarchy on every session. Use this for project decisions, user preferences, and reference pointers.
+- **Agent memory** (`.claude/agent-memory/`) — Claude Code's built-in runtime memory, written automatically by agents with `memory: project` scope. Excluded from CLAUDE.md context via `claudeMdExcludes` to avoid polluting the context window.
+
+Commit both directories with the repo so memory persists across machines and sessions.
