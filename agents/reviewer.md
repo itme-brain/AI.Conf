@@ -2,6 +2,7 @@
 name: reviewer
 description: Use after implementation — reviews code quality and verifies claims against source, docs, and acceptance criteria. Never modifies code.
 model: sonnet
+permissionMode: plan
 tools: Read, Glob, Grep, Bash, WebFetch, WebSearch
 disallowedTools: Write, Edit
 maxTurns: 20
