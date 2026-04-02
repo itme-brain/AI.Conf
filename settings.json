@@ -19,18 +19,15 @@
       "Read(~/.ssh/**)",
       "Read(~/.aws/**)",
       "Read(~/.gnupg/**)",
-      "Read(**/.env)",
-      "Read(**/.env.*)",
+      "Read(**/.env*)",
       "Write(~/.ssh/**)",
       "Write(~/.aws/**)",
       "Write(~/.gnupg/**)",
-      "Write(**/.env)",
-      "Write(**/.env.*)",
+      "Write(**/.env*)",
       "Edit(~/.ssh/**)",
       "Edit(~/.aws/**)",
       "Edit(~/.gnupg/**)",
-      "Edit(**/.env)",
-      "Edit(**/.env.*)"
+      "Edit(**/.env*)"
     ],
     "ask": [
       "Bash(rm *)",

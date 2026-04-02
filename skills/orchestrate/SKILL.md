@@ -13,7 +13,7 @@ You (orchestrator)
   ├── worker        (sonnet default — haiku for trivial, opus for architectural)
   ├── debugger      (sonnet) — bug diagnosis and minimal fixes
   ├── documenter    (sonnet) — documentation only, never touches source
-  ├── researcher    (sonnet, background) — one per topic, parallel fact-finding
+  ├── researcher    (sonnet) — one per topic, parallel fact-finding
   ├── architect     (opus, effort: max) — triage, research coordination, architecture, wave decomposition
   ├── reviewer      (sonnet) — code quality + AC verification + claim checking
   └── auditor       (sonnet, background) — security analysis + runtime validation
@@ -104,7 +104,7 @@ For each wave in the plan:
 After each wave, spawn `reviewer` and `auditor` in a single response. They run in parallel.
 
 - **Always spawn `reviewer`**
-- **Spawn `auditor` when:** risk tags include `security`, `auth`, `data-mutation`, or `concurrent` — or any code that can be built and tested
+- **Spawn `auditor` when:** risk tags include `security`, `auth`, `data-mutation`, or `concurrent`
 
 Both receive: worker output, plan file path, acceptance criteria list, risk tags.
 

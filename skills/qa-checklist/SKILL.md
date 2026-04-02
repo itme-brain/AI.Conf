@@ -44,7 +44,9 @@ Before returning your output, validate against every item below. If you find a v
 - Does the `type` field match your message type?
 - Does the `signal` field use a valid enum value from the message-schema skill?
 - Are all required fields for your message type present?
-- Are hard rules satisfied (e.g., `critical_count > 0` requires `signal: fail`)?
+- Are hard rules satisfied?
+  - `review_verdict`: `critical_count > 0` requires `signal: fail`
+  - `audit_verdict`: `security_findings.critical > 0` or `build_status: fail` or `test_status: fail` requires `signal: fail`
 
 ## After validation
 

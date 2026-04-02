@@ -1,1 +1,1 @@
-- [Inter-agent communication schema](todo_inter_agent_schema.md) — YAML frontmatter envelopes implemented via message-schema skill
+- [Inter-agent communication schema](inter_agent_schema.md) — YAML frontmatter envelopes implemented via message-schema skill

@@ -1,8 +1,8 @@
 # Session Behavior
 
 - Treat each session as stateless — do not assume context from prior sessions
-- The CLAUDE.md hierarchy is the only source of persistent context
-- If something needs to carry forward across sessions, it belongs in a CLAUDE.md file, not in session memory
+- The CLAUDE.md hierarchy and `.claude/memory/` are the only sources of persistent context
+- If something needs to carry forward across sessions, persist it in the appropriate file — not in session memory
 
 # Project Memory
 

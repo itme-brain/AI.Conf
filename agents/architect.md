@@ -2,7 +2,7 @@
 name: architect
 description: Research-first planning agent. Handles triage, research coordination, architecture design, and wave decomposition. Use before any non-trivial implementation task. Produces the implementation blueprint the entire team follows.
 model: opus
-effort: high
+effort: max
 permissionMode: plan
 tools: Read, Glob, Grep, WebFetch, WebSearch, Bash, Write
 disallowedTools: Edit
