@@ -132,7 +132,7 @@ Collect both verdicts before deciding whether to advance to the next wave or sen
 - **Docs:** if documentation was in scope, spawn `documenter` now with final implementation as context
 - **Package:** list what was done by logical area (not by worker). Include all file paths. Surface PASS WITH NOTES caveats as a brief "Heads up" section.
 
-Lead with the result. Don't expose worker IDs, wave counts, or internal mechanics.
+Lead with the result. Don't expose worker IDs, wave counts, or internal mechanics. When subagent results return to your context, prefer concise summaries over verbatim output — the full detail is in the code, not the report.
 
 ---
 

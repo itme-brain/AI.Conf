@@ -10,7 +10,7 @@ cd ~/agent-team
 ./install.sh
 ```
 
-The script symlinks `agents/`, `skills/`, `CLAUDE.md`, and `settings.json` into `~/.claude/`. Works on Linux, macOS, and Windows (Git Bash).
+The script symlinks `agents/`, `skills/`, `rules/`, `CLAUDE.md`, and `settings.json` into `~/.claude/`. Works on Linux, macOS, and Windows (Git Bash).
 
 ## Maintenance
 
@@ -37,6 +37,10 @@ The script symlinks `agents/`, `skills/`, `CLAUDE.md`, and `settings.json` into 
 | `worker-protocol` | Output format, feedback handling, and operational procedures for worker agents |
 | `qa-checklist` | Self-validation checklist workers run before returning results |
 | `project` | Instructs agents to check for and ingest a project-specific skill file before starting work |
+
+## Rules
+
+Global instructions are modularized in `rules/` and auto-loaded by Claude Code from `~/.claude/rules/` on every session. Each file covers a focused topic (git workflow, Nix preferences, response style, etc.). Agent-team specific protocols live in skills, not rules.
 
 ## How to use
 

@@ -8,8 +8,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CLAUDE_DIR="$HOME/.claude"
 AGENTS_SRC="$SCRIPT_DIR/agents"
 SKILLS_SRC="$SCRIPT_DIR/skills"
+RULES_SRC="$SCRIPT_DIR/rules"
 AGENTS_DST="$CLAUDE_DIR/agents"
 SKILLS_DST="$CLAUDE_DIR/skills"
+RULES_DST="$CLAUDE_DIR/rules"
 CLAUDE_MD_SRC="$SCRIPT_DIR/CLAUDE.md"
 CLAUDE_MD_DST="$CLAUDE_DIR/CLAUDE.md"
 SETTINGS_SRC="$SCRIPT_DIR/settings.json"
@@ -118,6 +120,7 @@ create_file_symlink() {
 
 create_symlink      "$AGENTS_SRC"    "$AGENTS_DST"    "agents"
 create_symlink      "$SKILLS_SRC"    "$SKILLS_DST"    "skills"
+create_symlink      "$RULES_SRC"     "$RULES_DST"     "rules"
 create_file_symlink "$CLAUDE_MD_SRC" "$CLAUDE_MD_DST" "CLAUDE.md"
 create_file_symlink "$SETTINGS_SRC"  "$SETTINGS_DST"  "settings.json"
 
