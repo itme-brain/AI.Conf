@@ -22,13 +22,16 @@
       "Read(~/.gnupg/**)",
       "Read(./.env)",
       "Read(./.env.*)",
-      "Bash(cat ~/.ssh/*)",
-      "Bash(cat ~/.aws/*)",
-      "Bash(cat ~/.gnupg/*)",
-      "Bash(cat .env*)",
-      "Bash(less ~/.ssh/*)",
-      "Bash(less ~/.aws/*)",
-      "Bash(less ~/.gnupg/*)"
+      "Write(~/.ssh/**)",
+      "Write(~/.aws/**)",
+      "Write(~/.gnupg/**)",
+      "Edit(~/.ssh/**)",
+      "Edit(~/.aws/**)",
+      "Edit(~/.gnupg/**)",
+      "Bash(*.ssh/*)",
+      "Bash(*.aws/*)",
+      "Bash(*.gnupg/*)",
+      "Bash(*.env*)"
     ],
     "ask": [
       "Bash(rm *)",
