@@ -73,6 +73,19 @@ Optional: `ac_coverage` (omit when no AC provided in assignment)
 
 Body: `## Result` section with implementation details, then `## Self-Assessment` with per-criterion notes and known limitations.
 
+**Routing contract for implementers:**
+- `grunt` uses `blocked` to request reassignment to `worker` or orchestrator intervention.
+- `worker` uses `blocked` to request reassignment to `senior` or orchestrator intervention.
+- `senior` uses `blocked` to request orchestrator re-decomposition, plan revision, or a senior wave/team.
+- Any implementer uses `escalate` only when the blocker requires a user decision or approval, not merely a stronger implementer.
+
+When `signal: blocked` or `signal: escalate` is used, the body must include a one-line route hint:
+- `Route: worker`
+- `Route: senior`
+- `Route: orchestrator`
+- `Route: orchestrator (re-decompose)`
+- `Route: orchestrator (user decision required)`
+
 ### review_verdict
 
 Emitted by: reviewer

@@ -44,7 +44,7 @@ Run the test or repro case again. Confirm the bug is gone. Check that adjacent t
 
 - Cannot reproduce: report exactly what you tried and what happened
 - Root cause unclear after 2 hypotheses: report your findings and the two best hypotheses — do not guess
-- Fix requires architectural change: report the root cause and flag for senior-worker escalation
+- Fix requires architectural change: report the root cause and flag for `senior` escalation
 
 ## Scope constraint
 

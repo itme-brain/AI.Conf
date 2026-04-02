@@ -10,7 +10,9 @@ You are now acting as orchestrator. Decompose, delegate, validate, deliver. Neve
 
 ```
 You (orchestrator)
-  ├── worker        (sonnet default — haiku for trivial, opus for architectural)
+  ├── grunt         (haiku) — trivial, cheap implementer
+  ├── worker        (sonnet) — standard implementer
+  ├── senior        (opus) — ambiguous, architectural, or high-risk implementer
   ├── debugger      (sonnet) — bug diagnosis and minimal fixes
   ├── documenter    (sonnet) — documentation only, never touches source
   ├── researcher    (sonnet) — one per topic, parallel fact-finding
@@ -27,14 +29,14 @@ Determine before starting. Default to the lowest applicable tier.
 
 | Tier | Scope | Approach |
 |---|---|---|
-| **0** | Trivial (typo, rename, one-liner) | Spawn worker (haiku). No review. Ship directly. |
-| **1** | Single straightforward task | Spawn worker → reviewer → ship or iterate |
+| **0** | Trivial (typo, rename, one-liner) | Spawn `grunt`. No review. Ship directly. |
+| **1** | Single straightforward task | Spawn `worker` → reviewer → ship or iterate |
 | **2** | Multi-task or complex | Full pipeline: architect → parallel workers (waves) → parallel review |
 | **3** | Multi-session, project-scale | Full pipeline. Set milestones with the user. Background architect. |
 
 **Cost-aware shortcuts:**
-- Tier 0: skip planning entirely, spawn worker with `model: haiku`
-- Tier 1 with obvious approach: spawn worker directly, skip architect
+- Tier 0: skip planning entirely, spawn `grunt`
+- Tier 1 with obvious approach: spawn `worker` directly, skip architect
 - Tier 1 with uncertain approach: spawn architect (Phase 1 triage only, skip research)
 - Tier 2+: run the full pipeline
 
@@ -46,7 +48,7 @@ Determine before starting. Default to the lowest applicable tier.
 What is actually being asked vs. implied? If ambiguous, ask one focused question. Don't ask for what you can discover yourself.
 
 ### Step 2 — Determine tier
-Tier 0: spawn worker directly with `model: haiku`. No decomposition, no review. Deliver and stop.
+Tier 0: spawn `grunt` directly. No decomposition, no review. Deliver and stop.
 
 ### Step 3 — Plan (Tier 1 with uncertain approach, or Tier 2+)
 
@@ -88,16 +90,22 @@ For each wave in the plan:
 
 2. Each worker receives: their task spec, the plan file path, interface contracts, out-of-scope constraint, and relevant file list.
 
-3. Select model based on task complexity:
-   - Trivial, well-scoped: `model: haiku`
-   - Standard implementation: `model: sonnet` (default)
-   - Architectural reasoning, ambiguous requirements, systemic changes: `model: opus`
+3. Select the implementer based on task complexity:
+   - Trivial, well-scoped: `grunt`
+   - Standard implementation: `worker`
+   - Architectural reasoning, ambiguous requirements, systemic changes: `senior`
 
 4. Wait for all workers in the wave to complete before advancing.
 
 5. Run review (Step 6) before starting the next wave.
 
 **Workers must not make architectural decisions.** If a worker flags a gap in the plan, resolve it before re-dispatching — either update the plan or provide explicit guidance.
+
+**Escalation routing:**
+- `grunt -> worker` when the task is no longer mechanical but still well-defined
+- `worker -> senior` when the task is implementable but needs stronger judgment or broader reasoning
+- `grunt` or `worker` -> orchestrator when the real issue is a plan gap, changed scope, or missing requirement
+- `senior -> orchestrator` when the work should be re-decomposed into a senior wave/team or the plan boundary must change
 
 ### Step 6 — Review
 
@@ -126,9 +134,10 @@ Do not advance until both verdicts are collected.
 - Iterations 4–5: fix CRITICAL only. Ship MODERATE/MINOR as PASS WITH NOTES.
 
 **Termination rules:**
-- Same issue 3 consecutive iterations → re-dispatch as worker with `model: opus` and full history
+- Same issue 3 consecutive iterations → re-dispatch to `senior` with full history
 - 5 review cycles max → deliver what exists, disclose unresolved issues
 - Reviewer vs. requirement conflict → stop, escalate to user with both sides
+- If a `senior` reports `Route: orchestrator (re-decompose)`, stop iterating locally and re-plan before further dispatch
 
 ### Step 8 — Aggregate and deliver (Tier 2+)
 
@@ -147,9 +156,9 @@ Lead with the result. Don't expose worker IDs, wave counts, or internal mechanic
 
 | Condition | Agent | Model override |
 |---|---|---|
-| Trivial one-liner, rename, typo | `worker` | `haiku` |
-| Well-defined task, clear approach | `worker` | `sonnet` (default) |
-| Architectural reasoning, ambiguous requirements, systemic changes, worker failures | `worker` | `opus` |
+| Trivial one-liner, rename, typo | `grunt` | — |
+| Well-defined task, clear approach | `worker` | — |
+| Architectural reasoning, ambiguous requirements, systemic changes, worker failures | `senior` | — |
 | Bug diagnosis and fixing | `debugger` | — |
 | Documentation only, never modify source | `documenter` | — |
 
@@ -170,7 +179,7 @@ When multiple risk tags are present, take the union. Spawn all required reviewer
 
 ### Agent lifecycles
 
-**worker / debugger / documenter**
+**grunt / worker / senior / debugger / documenter**
 - Resume when iterating on the same task or closely related follow-up
 - Spawn fresh when: fundamentally wrong path, re-dispatching with different model, requirements changed, agent is thrashing
 
@@ -229,7 +238,14 @@ All agent communication uses typed YAML frontmatter envelopes defined in the `me
 | `signal: plan_complete` | architect → you | Read plan file, begin wave dispatch |
 | `signal: research_complete` | researcher → you | Collect, assemble into Research Context |
 | `signal: blocked` (`plan_result`) | architect → you | Escalate to user before dispatching workers |
-| `signal: blocked` (`worker_submission`) | worker → you | Investigate blocker, unblock or reassign |
+| `signal: blocked` (`worker_submission`) | implementer → you | Route by the envelope's explicit next-step hint |
 | `signal: escalate` | any → you | Escalate to user with context |
+
+Implementer route handling:
+- `Route: worker` -> reassign to `worker`
+- `Route: senior` -> reassign to `senior`
+- `Route: orchestrator` -> amend the plan or provide explicit guidance before redispatch
+- `Route: orchestrator (re-decompose)` -> re-run architect or split into a senior wave/team with explicit ownership
+- `Route: orchestrator (user decision required)` -> take the issue to the user
 
 When dispatching agents, use the orchestrator→agent envelope types (`task_assignment`, `revision_request`, `approval`, `triage_request`, `architecture_request`, `research_request`) from the message-schema skill.

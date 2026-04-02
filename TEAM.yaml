@@ -6,8 +6,10 @@ agents:
     - auditor
     - debugger
     - documenter
+    - grunt
     - researcher
     - reviewer
+    - senior
     - worker
   items:
     architect:
@@ -100,6 +102,29 @@ agents:
         - qa-checklist
       memory: project
       instruction_file: agents/documenter.md
+    grunt:
+      id: grunt
+      name: grunt
+      description: Fast, cheap implementer for trivial and tightly scoped work. Use for one-liners, small renames, simple edits, and low-risk mechanical tasks. Escalate when the work grows beyond that scope.
+      model: haiku
+      effort: ""
+      permission_mode: acceptEdits
+      tools:
+        - Read
+        - Write
+        - Edit
+        - Glob
+        - Grep
+        - Bash
+      disallowed_tools: []
+      max_turns: 15
+      skills:
+        - conventions
+        - worker-protocol
+        - message-schema
+        - qa-checklist
+      isolation: worktree
+      instruction_file: agents/grunt.md
     researcher:
       id: researcher
       name: researcher
@@ -144,10 +169,33 @@ agents:
         - message-schema
         - qa-checklist
       instruction_file: agents/reviewer.md
+    senior:
+      id: senior
+      name: senior
+      description: Strong implementer for ambiguous, architectural, or high-risk work. Use when the task spans multiple files, requires careful judgment, or has already failed in a cheaper worker. Default escalation path for hard implementation work.
+      model: opus
+      effort: ""
+      permission_mode: acceptEdits
+      tools:
+        - Read
+        - Write
+        - Edit
+        - Glob
+        - Grep
+        - Bash
+      disallowed_tools: []
+      max_turns: 35
+      skills:
+        - conventions
+        - worker-protocol
+        - message-schema
+        - qa-checklist
+      isolation: worktree
+      instruction_file: agents/senior.md
     worker:
       id: worker
       name: worker
-      description: Universal implementer. Handles all task tiers — trivial to architectural. Model is scaled by the orchestrator based on task complexity (haiku for trivial, sonnet for standard, opus for architectural/ambiguous). Default implementer for all implementation work.
+      description: Balanced implementer for standard development work. Use when the task is well-defined but not trivial. Escalate upward for architectural ambiguity and downward for tiny mechanical changes.
       model: sonnet
       effort: ""
       permission_mode: acceptEdits

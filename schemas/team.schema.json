@@ -248,8 +248,10 @@
             "auditor",
             "debugger",
             "documenter",
+            "grunt",
             "researcher",
             "reviewer",
+            "senior",
             "worker"
           ]
         },
@@ -261,8 +263,10 @@
             "auditor",
             "debugger",
             "documenter",
+            "grunt",
             "researcher",
             "reviewer",
+            "senior",
             "worker"
           ],
           "properties": {
@@ -306,6 +310,16 @@
                 }
               ]
             },
+            "grunt": {
+              "allOf": [
+                { "$ref": "#/$defs/agent_item" },
+                {
+                  "properties": {
+                    "id": { "const": "grunt" }
+                  }
+                }
+              ]
+            },
             "researcher": {
               "allOf": [
                 { "$ref": "#/$defs/agent_item" },
@@ -322,6 +336,16 @@
                 {
                   "properties": {
                     "id": { "const": "reviewer" }
+                  }
+                }
+              ]
+            },
+            "senior": {
+              "allOf": [
+                { "$ref": "#/$defs/agent_item" },
+                {
+                  "properties": {
+                    "id": { "const": "senior" }
                   }
                 }
               ]

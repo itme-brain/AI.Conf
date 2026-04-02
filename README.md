@@ -1,6 +1,6 @@
 # AI.conf
 
-A portable agent team configuration for Claude Code and Codex CLI. Clone it, run the flake entrypoints or the `just` wrapper, and both tools get a full team of specialized subagents and shared skills on any machine.
+A portable agent-team config repo with shared authored sources and generated target outputs. Clone it, run the flake entrypoints or the `just` wrapper, and the repo will generate/install the target-specific config for the supported tools.
 
 ## Quick install
 
@@ -9,7 +9,7 @@ git clone <repo-url>
 cd agent-team
 nix develop              # enter devShell with yq + envsubst
 nix run .#check          # validate protocols + generate artifacts
-nix run .#install        # install into your Claude/Codex config dirs
+nix run .#install        # install generated outputs into the supported target config dirs
 ```
 
 The supported user-facing entrypoints are the flake apps and the `just` wrapper. `generate.sh` and `install.sh` remain the internal implementation layer behind them. Works on Linux, macOS, and Windows (Git Bash).
@@ -40,19 +40,21 @@ just clean          # removes generated artifacts: settings.json + claude/ + cod
 
 ## Maintenance
 
-**Symlink fragility:** the generated Claude files are installed as symlinks by `install.sh`. Some tools (including Claude Code itself when writing settings) resolve symlinks to regular files on write, silently breaking the link. If edits to the repo are no longer reflected in your Claude config dir, re-run `./install.sh` to restore the symlinks.
+**Symlink fragility:** some generated target files are installed as symlinks by `install.sh`. Tools that rewrite those files may replace the symlink with a regular file. If repo edits stop being reflected in an installed target config, re-run `./install.sh` to restore the symlink.
 
 ## Agents
 
-| Agent | Model | Role |
+| Agent | Model policy | Role |
 |---|---|---|
-| `worker` | sonnet (haiku/opus by orchestrator) | Universal implementer. Model scaled to task complexity. |
-| `debugger` | sonnet | Diagnoses and fixes bugs with minimal targeted changes. |
-| `documenter` | sonnet | Writes and updates docs. Never modifies source code. |
-| `architect` | opus | Triage, research coordination, architecture design, wave decomposition. Read-only. |
-| `researcher` | sonnet | Parallel fact-finding. One instance per research question. Read-only. |
-| `reviewer` | sonnet | Code quality review + AC verification + claim checking. Read-only. |
-| `auditor` | sonnet | Security analysis + runtime validation. Read-only, runs in background. |
+| `grunt` | fast | Cheap implementer for trivial, tightly scoped work. |
+| `worker` | balanced | Standard implementer for normal development tasks. |
+| `senior` | strong | Expensive implementer for ambiguous, architectural, or high-risk work. |
+| `debugger` | balanced | Diagnoses and fixes bugs with minimal targeted changes. |
+| `documenter` | balanced | Writes and updates docs. Never modifies source code. |
+| `architect` | strong | Triage, research coordination, architecture design, wave decomposition. Read-only. |
+| `researcher` | balanced | Parallel fact-finding. One instance per research question. Read-only. |
+| `reviewer` | balanced | Code quality review + AC verification + claim checking. Read-only. |
+| `auditor` | balanced | Security analysis + runtime validation. Read-only, runs in background. |
 
 ## Skills
 
@@ -67,9 +69,9 @@ just clean          # removes generated artifacts: settings.json + claude/ + cod
 
 ## Rules
 
-Global instructions are modularized in `rules/` and auto-loaded by Claude Code from the installed Claude config on every session. Each file covers a focused topic (git workflow, Nix preferences, response style, etc.). Agent-team specific protocols live in skills, not rules.
+Global instructions are modularized in `rules/`. Each file covers a focused topic (git workflow, Nix preferences, response style, etc.). Agent-team specific protocols live in skills, not rules. Target adapters decide how those rules are surfaced.
 
-## How to use
+## Target usage
 
 ### Claude Code
 
@@ -85,6 +87,8 @@ For simple tasks, invoke an agent directly:
 
 ```
 /agent worker Fix the broken pagination in the user list endpoint
+/agent grunt Rename this variable consistently in one file
+/agent senior Untangle this multi-file initialization bug
 ```
 
 ### Codex CLI
@@ -104,19 +108,19 @@ This repo uses two authored protocol files:
 
 Long-form instructions remain authored in Markdown (`agents/*.md`, `skills/*/SKILL.md`, `rules/*.md`).
 
-Runtime policy is documented in [spec/agent-runtime-v1.md](spec/agent-runtime-v1.md) and described by [schemas/agent-runtime.schema.json](schemas/agent-runtime.schema.json). Team inventory is documented in [spec/team-protocol-v1.md](spec/team-protocol-v1.md). `generate.sh` derives tool-specific outputs for both Claude Code and [OpenAI Codex CLI](https://github.com/openai/codex).
+Runtime policy is documented in [spec/agent-runtime-v1.md](spec/agent-runtime-v1.md) and described by [schemas/agent-runtime.schema.json](schemas/agent-runtime.schema.json). Team inventory is documented in [spec/team-protocol-v1.md](spec/team-protocol-v1.md). `generate.sh` derives target-specific outputs for the currently supported adapters.
 
 ### What gets generated
 
 | Source | Generated | Location |
 |---|---|---|
-| `TEAM.yaml` + `agents/*.md` | `claude/agents/*.md` | Claude config dir |
-| `TEAM.yaml` + `agents/*.md` | `codex/agents/*.toml` | Codex config dir |
+| `TEAM.yaml` + `agents/*.md` | `claude/agents/*.md` | Claude adapter output |
+| `TEAM.yaml` + `agents/*.md` | `codex/agents/*.toml` | Codex adapter output |
 | `SETTINGS.yaml` | `settings.json` (compatibility artifact, generated) | repo root |
-| `SETTINGS.yaml` | `claude/settings.json` | Claude config dir |
-| `SETTINGS.yaml` | `codex/config.toml` | Codex config dir |
-| `TEAM.yaml` + `rules/*.md` | `codex/AGENTS.md` | Codex config dir |
-| `TEAM.yaml` + `skills/*/SKILL.md` | installed skill dirs | installed skill dirs |
+| `SETTINGS.yaml` | `claude/settings.json` | Claude adapter output |
+| `SETTINGS.yaml` | `codex/config.toml` | Codex adapter output |
+| `TEAM.yaml` + `rules/*.md` | `codex/AGENTS.md` | Codex adapter output |
+| `TEAM.yaml` + `skills/*/SKILL.md` | installed skill dirs | target install output |
 
 All final config files are generated artifacts. The authored protocol sources are `SETTINGS.yaml`, `TEAM.yaml`, and Markdown instruction content. The primary workflows are `nix run .#build` / `nix run .#install` or the equivalent `just` commands.
 
@@ -128,7 +132,7 @@ Narrow compatibility caveats:
 
 Shared runtime intent is generated conservatively across tools:
 
-| Shared source | Claude Code | Codex CLI |
+| Shared source | Claude adapter | Codex adapter |
 |---|---|---|
 | `runtime.filesystem = read-only` | `permissions.defaultMode = "plan"` | `sandbox_mode = "read-only"` |
 | `runtime.filesystem = workspace-write` | `permissions.defaultMode = "acceptEdits"` | `sandbox_mode = "workspace-write"` |
@@ -136,7 +140,7 @@ Shared runtime intent is generated conservatively across tools:
 | `runtime.approval = guarded-auto` | partially represented | `approval_policy = "untrusted"` |
 | `runtime.approval = full-auto` | partially represented | `approval_policy = "never"` |
 
-Codex does not support Claude's per-tool `allow` / `deny` / `ask` patterns directly. The shared protocol keeps the intent portable, then adapters derive the closest target behavior. Use target-specific fields only where there is no shared equivalent:
+The adapters do not expose identical config surfaces. For example, Codex does not support Claude-style per-tool `allow` / `deny` / `ask` patterns directly. The shared protocol keeps the intent portable, then adapters derive the closest target behavior. Use target-specific fields only where there is no shared equivalent:
 
 ```yaml
 targets:
@@ -204,9 +208,9 @@ safety:
       - sudo *
 ```
 
-## Model mapping
+## Model mapping by target
 
-| Claude Code | Codex CLI |
+| Claude adapter | Codex adapter |
 |---|---|
 | `opus` | `gpt-5.4` |
 | `sonnet` | `gpt-5.3-codex` |
@@ -216,7 +220,7 @@ safety:
 
 Agent body text uses `${VAR}` placeholders that are expanded per-target by `generate.sh`:
 
-| Variable | Claude | Codex |
+| Variable | Claude adapter | Codex adapter |
 |---|---|---|
 | `${PLANS_DIR}` | `.claude/plans` | `plans` |
 | `${WEB_SEARCH}` | `via WebFetch/WebSearch` | `via web search` |
