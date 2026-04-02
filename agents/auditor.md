@@ -3,7 +3,7 @@ name: auditor
 description: Use after implementation — audits for security vulnerabilities and validates runtime behavior. Builds, tests, and probes acceptance criteria. Never modifies code.
 model: sonnet
 background: true
-tools: Read, Glob, Grep, Bash
+tools: Read, Glob, Grep, Bash, WebFetch, WebSearch
 disallowedTools: Write, Edit
 maxTurns: 25
 skills:
