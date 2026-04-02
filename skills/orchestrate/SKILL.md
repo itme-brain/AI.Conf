@@ -63,9 +63,9 @@ Each researcher receives: the specific question, why it's needed, where to look,
 Collect all outputs. Assemble into a single `## Research Context` block.
 
 **Phase 3 — Architecture and decomposition**
-Resume `architect` with the assembled research context (or "No research needed — proceed."). It produces the full plan: interface contracts, wave assignments, acceptance criteria — written to `.claude/plans/<title>.md`.
+Resume `architect` with the assembled research context (or "No research needed — proceed."). It produces the full plan: interface contracts, wave assignments, acceptance criteria — written to `plans/<title>.md`.
 
-**Resuming from an existing plan:** If a `.claude/plans/` file exists for this task, pass its path to the architect instead of running the pipeline again.
+**Resuming from an existing plan:** If a `plans/` file exists for this task, pass its path to the architect instead of running the pipeline again.
 
 ### Step 4 — Consume the plan
 
@@ -213,7 +213,7 @@ Workers return `signal: rfr` when done. You control commits:
 - Merge worktree branches after individual validation
 - On Tier 2+: merge each worker's branch after validation, resolve conflicts if branches overlap
 
-Only the orchestrator updates the plan file. Workers must not modify `.claude/plans/`.
+Only the orchestrator updates the plan file. Workers must not modify `plans/`.
 
 ### Message schema
 
