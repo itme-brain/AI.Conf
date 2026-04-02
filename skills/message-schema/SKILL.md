@@ -118,7 +118,7 @@ typecheck_status: pass | fail | skipped
 Required: `type`, `signal`, `security_findings`, `build_status`, `test_status`
 Optional: `typecheck_status`
 
-**Hard rule:** `security_findings.critical > 0` or `build_status: fail` or `test_status: fail` requires `signal: fail`.
+**Hard rule:** `security_findings.critical > 0` or `build_status: fail` or `test_status: fail` requires `signal: fail`. High-severity findings (`security_findings.high > 0`) do not require `fail` — use `pass_with_notes`.
 
 Body: Security findings by severity (or CLEAN), then Runtime section with tested/passed/failed.
 

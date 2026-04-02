@@ -15,7 +15,7 @@ signal: rfr | blocked | escalate
 files_changed:
   - path/to/file1
   - path/to/file2
-ac_coverage:
+ac_coverage:                          # optional — omit when no AC provided
   AC1: pass | fail | partial | na
   AC2: pass | fail | partial | na
 qa_check: pass | fail
