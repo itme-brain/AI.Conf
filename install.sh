@@ -11,7 +11,6 @@ SKILLS_SRC="$SCRIPT_DIR/skills"
 RULES_SRC="$SCRIPT_DIR/rules"
 TEAM_YAML="$SCRIPT_DIR/TEAM.yaml"
 AGENTS_DST="$CLAUDE_DIR/agents"
-SKILLS_DST="$CLAUDE_DIR/skills"
 RULES_DST="$CLAUDE_DIR/rules"
 CLAUDE_MD_SRC="$SCRIPT_DIR/claude/CLAUDE.md"
 CLAUDE_MD_DST="$CLAUDE_DIR/CLAUDE.md"
@@ -31,11 +30,14 @@ echo "Source:       $SCRIPT_DIR"
 echo "Target:       $CLAUDE_DIR"
 echo ""
 
-# Pre-flight: require generated claude/ output before proceeding
-if [ ! -d "$SCRIPT_DIR/claude" ]; then
-    echo "Error: claude/ not found. Run ./generate.sh first."
+# Pre-flight: build fresh generated outputs before proceeding.
+if [ ! -f "$SCRIPT_DIR/generate.sh" ]; then
+    echo "Error: generate.sh not found."
     exit 1
 fi
+
+echo "Generating fresh artifacts before install..."
+bash "$SCRIPT_DIR/generate.sh"
 
 # Ensure ~/.claude exists
 mkdir -p "$CLAUDE_DIR"
@@ -80,6 +82,22 @@ create_symlink() {
     fi
 
     echo "Linked: $dst -> $src"
+}
+
+ensure_directory() {
+    local dst="$1"
+    local name="$2"
+
+    if [ -L "$dst" ]; then
+        echo "Removing existing symlink: $dst"
+        rm "$dst"
+    elif [ -f "$dst" ]; then
+        local backup="${dst}.backup.$(date +%Y%m%d%H%M%S)"
+        echo "Backing up existing $name file to: $backup"
+        mv "$dst" "$backup"
+    fi
+
+    mkdir -p "$dst"
 }
 
 # Symlink a single file
@@ -165,11 +183,95 @@ resolve_skill_dir_from_team() {
     printf '%s\n' "$skill_dir"
 }
 
+install_team_skills_for_target() {
+    local target="$1"
+    local dst_root="$2"
+    local label_prefix="$3"
+
+    ensure_directory "$dst_root" "$label_prefix skills"
+
+    local skill_dir skill_name skill_dst skill_id skill_dir_path
+    local expected_skills_tmp
+    expected_skills_tmp="$(mktemp)"
+
+    cleanup_skill_symlinks() {
+        local expected_file="$1"
+        local existing_path existing_name
+
+        for existing_path in "$dst_root"/*; do
+            [ -e "$existing_path" ] || [ -L "$existing_path" ] || continue
+            [ -L "$existing_path" ] || continue
+
+            existing_name="$(basename "$existing_path")"
+            if [ -s "$expected_file" ] && grep -Fxq "$existing_name" "$expected_file"; then
+                continue
+            fi
+
+            echo "Removing stale symlink: $existing_path"
+            rm "$existing_path"
+        done
+    }
+
+    if [ -f "$TEAM_YAML" ]; then
+        local team_skills_tmp
+        team_skills_tmp="$(mktemp)"
+        if ! list_team_skills_for_target "$target" > "$team_skills_tmp" 2>/dev/null; then
+            echo "Warning: TEAM.yaml exists but could not be parsed; falling back to directory-based ${label_prefix} skill install."
+            for skill_dir in "$SKILLS_SRC"/*/; do
+                skill_name="$(basename "$skill_dir")"
+                printf '%s\n' "$skill_name" >> "$expected_skills_tmp"
+            done
+            cleanup_skill_symlinks "$expected_skills_tmp"
+            for skill_dir in "$SKILLS_SRC"/*/; do
+                skill_name="$(basename "$skill_dir")"
+                create_symlink "$skill_dir" "$dst_root/$skill_name" "${label_prefix} skill: $skill_name"
+            done
+            rm -f "$team_skills_tmp"
+            rm -f "$expected_skills_tmp"
+            return
+        fi
+
+        while IFS= read -r skill_id; do
+            [ -n "$skill_id" ] || continue
+            printf '%s\n' "$skill_id" >> "$expected_skills_tmp"
+        done < "$team_skills_tmp"
+
+        cleanup_skill_symlinks "$expected_skills_tmp"
+
+        while IFS= read -r skill_id; do
+            [ -n "$skill_id" ] || continue
+            skill_dir_path="$(resolve_skill_dir_from_team "$skill_id" || true)"
+            if [ -z "$skill_dir_path" ]; then
+                echo "Warning: TEAM.yaml skill '$skill_id' has no valid instruction_file directory; skipping."
+                continue
+            fi
+            create_symlink "$skill_dir_path" "$dst_root/$skill_id" "${label_prefix} skill: $skill_id"
+        done < "$team_skills_tmp"
+        rm -f "$team_skills_tmp"
+        rm -f "$expected_skills_tmp"
+        return
+    fi
+
+    for skill_dir in "$SKILLS_SRC"/*/; do
+        skill_name="$(basename "$skill_dir")"
+        printf '%s\n' "$skill_name" >> "$expected_skills_tmp"
+    done
+
+    cleanup_skill_symlinks "$expected_skills_tmp"
+
+    for skill_dir in "$SKILLS_SRC"/*/; do
+        skill_name="$(basename "$skill_dir")"
+        create_symlink "$skill_dir" "$dst_root/$skill_name" "${label_prefix} skill: $skill_name"
+    done
+
+    rm -f "$expected_skills_tmp"
+}
+
 create_symlink      "$AGENTS_SRC"    "$AGENTS_DST"    "agents"
-create_symlink      "$SKILLS_SRC"    "$SKILLS_DST"    "skills"
 create_symlink      "$RULES_SRC"     "$RULES_DST"     "rules"
 create_file_symlink "$CLAUDE_MD_SRC" "$CLAUDE_MD_DST" "CLAUDE.md"
 create_file_symlink "$SETTINGS_SRC"  "$SETTINGS_DST"  "settings.json"
+install_team_skills_for_target "claude" "$CLAUDE_DIR/skills" "claude"
 
 # Codex CLI integration (optional — only if codex/ output exists)
 CODEX_DIR="$HOME/.codex"
@@ -181,36 +283,7 @@ if [ -d "$SCRIPT_DIR/codex" ]; then
 
     # Skills: symlink each skill directory into ~/.codex/skills/
     # (Can't replace the whole directory — .system/ must remain intact)
-    mkdir -p "$CODEX_DIR/skills"
-    if [ -f "$TEAM_YAML" ]; then
-        team_codex_skills_tmp="$(mktemp)"
-        if ! list_team_skills_for_target "codex" > "$team_codex_skills_tmp" 2>/dev/null; then
-            echo "Warning: TEAM.yaml exists but could not be parsed; falling back to directory-based Codex skill install."
-            for skill_dir in "$SKILLS_SRC"/*/; do
-                skill_name="$(basename "$skill_dir")"
-                create_symlink "$skill_dir" "$CODEX_DIR/skills/$skill_name" "codex skill: $skill_name"
-            done
-            rm -f "$team_codex_skills_tmp"
-        else
-            # TEAM is authoritative when present, including the explicit zero-skills case.
-            while IFS= read -r skill_id; do
-                [ -n "$skill_id" ] || continue
-                skill_dir="$(resolve_skill_dir_from_team "$skill_id" || true)"
-                if [ -z "$skill_dir" ]; then
-                    echo "Warning: TEAM.yaml skill '$skill_id' has no valid instruction_file directory; skipping."
-                    continue
-                fi
-                create_symlink "$skill_dir" "$CODEX_DIR/skills/$skill_id" "codex skill: $skill_id"
-            done < "$team_codex_skills_tmp"
-            rm -f "$team_codex_skills_tmp"
-        fi
-    else
-        # Legacy fallback only when TEAM.yaml is absent.
-        for skill_dir in "$SKILLS_SRC"/*/; do
-            skill_name="$(basename "$skill_dir")"
-            create_symlink "$skill_dir" "$CODEX_DIR/skills/$skill_name" "codex skill: $skill_name"
-        done
-    fi
+    install_team_skills_for_target "codex" "$CODEX_DIR/skills" "codex"
 
     # Generated agents
     if [ -d "$SCRIPT_DIR/codex/agents" ]; then

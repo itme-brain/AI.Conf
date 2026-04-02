@@ -25,9 +25,9 @@ agents:
         - Grep
         - WebFetch
         - WebSearch
-        - Bash
         - Write
-      disallowed_tools: []
+      disallowed_tools:
+        - Edit
       max_turns: 35
       skills:
         - conventions
@@ -39,7 +39,7 @@ agents:
       description: Use after implementation — audits for security vulnerabilities and validates runtime behavior. Builds, tests, and probes acceptance criteria. Never modifies code.
       model: sonnet
       effort: ""
-      permission_mode: ""
+      permission_mode: acceptEdits
       tools:
         - Read
         - Glob
@@ -82,17 +82,16 @@ agents:
     documenter:
       id: documenter
       name: documenter
-      description: Use when asked to write or update documentation — READMEs, API references, architecture overviews, inline doc comments, or changelogs. Reads code first, writes accurate docs. Never modifies source code.
+      description: Use when asked to write or update documentation — READMEs, API references, architecture overviews, inline doc comments, or changelogs. Reads code first and updates documentation artifacts only.
       model: sonnet
       effort: high
-      permission_mode: ""
+      permission_mode: acceptEdits
       tools:
         - Read
         - Write
         - Edit
         - Glob
         - Grep
-        - Bash
       disallowed_tools: []
       max_turns: 20
       skills:
@@ -136,7 +135,6 @@ agents:
         - Read
         - Glob
         - Grep
-        - Bash
         - WebFetch
         - WebSearch
       disallowed_tools:
@@ -157,7 +155,6 @@ agents:
         - Read
         - Glob
         - Grep
-        - Bash
         - WebFetch
         - WebSearch
       disallowed_tools:

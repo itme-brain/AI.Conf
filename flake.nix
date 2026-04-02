@@ -60,6 +60,22 @@
 
           validate(instance=settings_data, schema=settings_schema)
           validate(instance=team_data, schema=team_schema)
+
+          # TEAM referenced files must exist on disk.
+          for agent_id in team_data["agents"]["order"]:
+              instruction_file = team_data["agents"]["items"][agent_id]["instruction_file"]
+              if not (root / instruction_file).is_file():
+                  raise FileNotFoundError(f"Missing agent instruction file: {instruction_file}")
+
+          for skill_id in team_data["skills"]["order"]:
+              instruction_file = team_data["skills"]["items"][skill_id]["instruction_file"]
+              if not (root / instruction_file).is_file():
+                  raise FileNotFoundError(f"Missing skill instruction file: {instruction_file}")
+
+          for rule_id in team_data["rules"]["order"]:
+              source_file = team_data["rules"]["items"][rule_id]["source_file"]
+              if not (root / source_file).is_file():
+                  raise FileNotFoundError(f"Missing rule source file: {source_file}")
           PY
         '';
 
@@ -104,6 +120,7 @@
             program = "${mkAppScript "install" ''
               set -euo pipefail
               test -f ./install.sh || { echo "Run this command from the repository root."; exit 1; }
+              ${validateCmd}
               ${bashBin} ./install.sh
             ''}/bin/install";
             meta.description = "Install generated artifacts into Claude and Codex config directories.";
@@ -148,6 +165,22 @@
 
           validate(instance=settings_data, schema=settings_schema)
           validate(instance=team_data, schema=team_schema)
+
+          # TEAM referenced files must exist on disk.
+          for agent_id in team_data["agents"]["order"]:
+              instruction_file = team_data["agents"]["items"][agent_id]["instruction_file"]
+              if not (root / instruction_file).is_file():
+                  raise FileNotFoundError(f"Missing agent instruction file: {instruction_file}")
+
+          for skill_id in team_data["skills"]["order"]:
+              instruction_file = team_data["skills"]["items"][skill_id]["instruction_file"]
+              if not (root / instruction_file).is_file():
+                  raise FileNotFoundError(f"Missing skill instruction file: {instruction_file}")
+
+          for rule_id in team_data["rules"]["order"]:
+              source_file = team_data["rules"]["items"][rule_id]["source_file"]
+              if not (root / source_file).is_file():
+                  raise FileNotFoundError(f"Missing rule source file: {source_file}")
           PY
         '';
 

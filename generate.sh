@@ -435,11 +435,11 @@ map_default_sandbox_mode() {
 
 # ---------------------------------------------------------------------------
 # map_approval_policy — determines Codex approval_policy from shared config
-#   $1 = Claude permissions.defaultMode value
+#   $1 = runtime.approval value (manual / guarded-auto / full-auto)
 #   $2 = optional Codex approval override from shared config
 # ---------------------------------------------------------------------------
 map_approval_policy() {
-    local default_mode="$1"
+    local runtime_approval="$1"
     local override="$2"
 
     if [ -n "$override" ] && [ "$override" != "null" ]; then
@@ -447,14 +447,7 @@ map_approval_policy() {
         return
     fi
 
-    # Closest intent mapping:
-    # - plan remains guarded
-    # - acceptEdits becomes Codex's closest "edit without constant prompts" mode
-    case "$default_mode" in
-        plan)         echo "on-request" ;;
-        acceptEdits)  echo "untrusted" ;;
-        *)            echo "untrusted" ;;
-    esac
+    map_approval_intent_to_codex_policy "$runtime_approval"
 }
 
 # ---------------------------------------------------------------------------
@@ -560,6 +553,8 @@ generate_codex() {
     # Clean and recreate output directories
     rm -rf "$CODEX_DIR"
     mkdir -p "$CODEX_AGENTS_DIR"
+    ln -s ../skills "$CODEX_DIR/skills"
+    echo "Symlinked: $CODEX_DIR/skills -> ../skills"
 
     # Generate agent .toml files from TEAM metadata + markdown instruction body
     echo "Generating Codex agent definitions..."
@@ -568,6 +563,7 @@ generate_codex() {
         [ -n "$agent_id" ] || continue
 
         local name description model effort permission_mode tools disallowed_tools
+        local agent_skills
         local src_file dst_file
         name="$(yq -r ".agents.items.${agent_id}.name" "$TEAM_YAML")"
         description="$(yq -r ".agents.items.${agent_id}.description" "$TEAM_YAML")"
@@ -576,6 +572,7 @@ generate_codex() {
         permission_mode="$(yq -r ".agents.items.${agent_id}.permission_mode // \"\"" "$TEAM_YAML")"
         tools="$(yq -r ".agents.items.${agent_id}.tools[]" "$TEAM_YAML" | csv_from_yaml_array)"
         disallowed_tools="$(yq -r ".agents.items.${agent_id}.disallowed_tools // [] | .[]" "$TEAM_YAML" | csv_from_yaml_array)"
+        agent_skills="$(yq -r ".agents.items.${agent_id}.skills[]" "$TEAM_YAML")"
         src_file="$SCRIPT_DIR/$(yq -r ".agents.items.${agent_id}.instruction_file" "$TEAM_YAML")"
         dst_file="$CODEX_AGENTS_DIR/${name}.toml"
 
@@ -599,6 +596,13 @@ generate_codex() {
 You do NOT have access to these tools: ${disallowed_tools}"
         fi
 
+        # TOML multiline basic strings use """ delimiters; reject raw delimiter
+        # sequences in instruction bodies so generated TOML remains parseable.
+        if printf '%s' "$developer_instructions" | grep -q '"""'; then
+            echo "Error: agent instruction contains raw triple quotes (\"\"\") which break TOML in $src_file"
+            exit 1
+        fi
+
         # Write TOML output
         cat > "$dst_file" <<TOML
 name = "${name}"
@@ -606,10 +610,34 @@ description = "${description}"
 model = "${codex_model}"
 model_reasoning_effort = "${codex_effort}"
 sandbox_mode = "${codex_sandbox}"
+TOML
+
+        cat >> "$dst_file" <<TOML
 developer_instructions = """
 ${developer_instructions}
 """
 TOML
+
+        local skill_id skill_applies enabled
+        while IFS= read -r skill_id; do
+            [ -n "$skill_id" ] || continue
+            skill_applies="$(yq -r ".skills.items.${skill_id}.applies_to[]" "$TEAM_YAML")"
+            if ! printf '%s\n' "$skill_applies" | grep -qx "codex"; then
+                continue
+            fi
+
+            enabled=false
+            if printf '%s\n' "$agent_skills" | grep -qx "$skill_id"; then
+                enabled=true
+            fi
+
+            cat >> "$dst_file" <<TOML
+[[skills.config]]
+path = "../skills/${skill_id}/SKILL.md"
+enabled = ${enabled}
+
+TOML
+        done < <(yq -r '.skills.order[]' "$TEAM_YAML")
 
         echo "Generated: $dst_file"
     done < <(yq -r '.agents.order[]' "$TEAM_YAML")
@@ -620,7 +648,7 @@ TOML
     {
         echo "# Agent Team Instructions"
         echo ""
-        echo "Agent-team specific protocols live in skills (orchestrate, conventions, worker-protocol, qa-checklist, message-schema, project)."
+        echo "Agent-team specific protocols live in skills (orchestrate, conventions, worker-protocol, qa-checklist, message-schema)."
         local rule_id rules_file
         while IFS= read -r rule_id; do
             [ -n "$rule_id" ] || continue
@@ -636,14 +664,15 @@ TOML
     echo ""
     echo "Generating codex/config.toml..."
 
-    local default_mode codex_approval_override codex_network_access
+    local default_mode runtime_approval codex_approval_override codex_network_access
     default_mode="$(map_filesystem_intent_to_claude_mode "$(yq -r '.runtime.filesystem' "$SETTINGS_SHARED_YAML")")"
+    runtime_approval="$(yq -r '.runtime.approval' "$SETTINGS_SHARED_YAML")"
     codex_approval_override="$(yq -r '.targets.codex.approval_policy // ""' "$SETTINGS_SHARED_YAML")"
     codex_network_access="$(yq -r '.targets.codex.network_access // .runtime.network_access // false' "$SETTINGS_SHARED_YAML")"
 
     local config_sandbox config_approval
     config_sandbox="$(map_default_sandbox_mode "$default_mode")"
-    config_approval="$(map_approval_policy "$default_mode" "$codex_approval_override")"
+    config_approval="$(map_approval_policy "$runtime_approval" "$codex_approval_override")"
 
     cat > "$CODEX_DIR/config.toml" <<TOML
 #:schema https://developers.openai.com/codex/config-schema.json

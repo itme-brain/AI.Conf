@@ -79,9 +79,10 @@ Each agent entry includes metadata required for adapter generation:
 Each skill entry includes lightweight metadata and content reference:
 
 - `id`
+- `name`
 - `description`
 - `instruction_file`
-- optional target/install metadata
+- target/install metadata (`applies_to`, `install_mode`)
 
 Skill prose remains in `skills/*/SKILL.md`.
 
@@ -110,6 +111,7 @@ Current target behavior:
   - `codex/config.toml`
   - `codex/AGENTS.md`
   - `codex/agents/*.toml`
+  - `codex/skills` symlinked to the shared skill directories for relative `skills.config` references
 
 ## Validation Requirements
 
@@ -128,6 +130,7 @@ TEAM validation enforces schema + runtime checks for:
 - Existing YAML frontmatter in `agents/*.md` may remain for editorial continuity, but generation does not use it for team metadata.
 - Output diffs that are purely formatting-related are acceptable; semantic behavior changes are not unless explicitly documented.
 - TEAM schema is intentionally rigid/repo-specific in v1; inventory additions/removals require schema updates in lockstep.
+- Agent metadata is not fully portable across targets. Current Codex custom-agent docs cover session-style fields such as `model`, `model_reasoning_effort`, `sandbox_mode`, `mcp_servers`, and `skills.config`, but do not document per-agent equivalents for TEAM's `background`, `memory`, or `isolation` fields.
 
 ## Out of Scope
 

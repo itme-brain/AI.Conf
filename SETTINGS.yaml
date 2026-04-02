@@ -47,5 +47,8 @@ targets:
     claude_md_excludes:
       - .claude/agent-memory/**
   codex:
-    approval_policy: untrusted
-    network_access: false
+    # Intentional target override: Codex does not expose Claude-equivalent
+    # per-tool/path allow/deny/ask controls, so this repo runs Codex in
+    # full-auto with network enabled by default.
+    approval_policy: never
+    network_access: true

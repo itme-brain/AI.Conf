@@ -367,7 +367,7 @@
     "inventory_skills": {
       "type": "object",
       "additionalProperties": false,
-      "description": "Skill inventory for protocol v1. This schema enforces exact order, exact keys, and key/id equality for the current repository inventory.",
+      "description": "Skill inventory for protocol v1. This schema enforces exact order, exact keys, and key/id equality for the current repository inventory. The fixed v1 inventory does not include a separate 'project' skill entry.",
       "required": [
         "order",
         "items"

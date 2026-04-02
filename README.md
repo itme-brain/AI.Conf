@@ -65,7 +65,6 @@ just clean          # removes generated artifacts: settings.json + claude/ + cod
 | `worker-protocol` | Output format, feedback handling, and operational procedures for worker agents |
 | `qa-checklist` | Self-validation checklist workers run before returning results |
 | `message-schema` | Typed YAML frontmatter envelopes for all inter-agent communication |
-| `project` | Instructs agents to check for and ingest a project-specific skill file before starting work |
 
 ## Rules
 
@@ -120,6 +119,7 @@ Runtime policy is documented in [spec/agent-runtime-v1.md](spec/agent-runtime-v1
 | `SETTINGS.yaml` | `claude/settings.json` | Claude adapter output |
 | `SETTINGS.yaml` | `codex/config.toml` | Codex adapter output |
 | `TEAM.yaml` + `rules/*.md` | `codex/AGENTS.md` | Codex adapter output |
+| `TEAM.yaml` + `skills/*/SKILL.md` | `codex/skills -> ../skills` | Codex adapter output |
 | `TEAM.yaml` + `skills/*/SKILL.md` | installed skill dirs | target install output |
 
 All final config files are generated artifacts. The authored protocol sources are `SETTINGS.yaml`, `TEAM.yaml`, and Markdown instruction content. The primary workflows are `nix run .#build` / `nix run .#install` or the equivalent `just` commands.
@@ -129,6 +129,7 @@ Narrow compatibility caveats:
 - TEAM schema is intentionally rigid/repo-specific in v1. Inventory changes require schema updates in lockstep.
 - Claude generated agent frontmatter is normalized by generator serialization (field order/quoting), which may produce non-semantic diffs.
 - Codex skill installation is TEAM-authoritative when `TEAM.yaml` is present. Legacy directory fallback is used only when TEAM is absent or unparseable.
+- Codex custom-agent files do not preserve every TEAM agent field. `background`, `memory`, and `isolation` have no documented per-agent equivalents in current Codex docs. TEAM `skills` are mapped into per-agent Codex `skills.config` entries.
 
 Shared runtime intent is generated conservatively across tools:
 
@@ -140,7 +141,13 @@ Shared runtime intent is generated conservatively across tools:
 | `runtime.approval = guarded-auto` | partially represented | `approval_policy = "untrusted"` |
 | `runtime.approval = full-auto` | partially represented | `approval_policy = "never"` |
 
-The adapters do not expose identical config surfaces. For example, Codex does not support Claude-style per-tool `allow` / `deny` / `ask` patterns directly. The shared protocol keeps the intent portable, then adapters derive the closest target behavior. Use target-specific fields only where there is no shared equivalent:
+The adapters do not expose identical config surfaces. For example, Codex does not support Claude-style per-tool `allow` / `deny` / `ask` patterns directly. The shared protocol keeps the intent portable, then adapters derive the closest target behavior.
+
+`runtime.approval` and `runtime.network_access` are the primary source of truth. `targets.codex.approval_policy` and `targets.codex.network_access` are compatibility overrides for exceptional cases only. When set, they override the Codex-derived value.
+
+This repo intentionally sets those Codex overrides to `approval_policy: never` and `network_access: true`. The reason is not that Codex has no approval controls at all, but that it lacks Claude-equivalent pattern-level permission controls for tool/path `allow` / `deny` / `ask`. In this repo, Codex therefore runs with a deliberately more permissive top-level policy than the portable runtime defaults.
+
+Use target-specific fields only when you intentionally need a target-only override:
 
 ```yaml
 targets:
@@ -234,7 +241,6 @@ Each project repo can extend the team with local config in `.claude/`:
 
 - `.claude/CLAUDE.md` — project-specific instructions (architecture notes, domain conventions, stack details)
 - `.claude/agents/` — project-local agent overrides or additions
-- `.claude/skills/project.md` — skill file that agents automatically ingest before starting work (see the `project` skill)
 
 Commit `.claude/` with the project so the team has context wherever it runs.
 
@@ -242,7 +248,7 @@ Commit `.claude/` with the project so the team has context wherever it runs.
 
 Two memory systems coexist:
 
-- **Manual memory** (`.claude/memory/`) — curated context files with YAML frontmatter, indexed by `MEMORY.md`. Loaded as part of the CLAUDE.md hierarchy on every session. Use this for project decisions, user preferences, and reference pointers.
+- **Project memory** (`memory/`) — curated context files with YAML frontmatter, indexed by `MEMORY.md`. This is the portable, instruction-level memory source shared across targets.
 - **Agent memory** (`.claude/agent-memory/`) — Claude Code's built-in runtime memory, written automatically by agents with `memory: project` scope. Excluded from CLAUDE.md context via `claudeMdExcludes` to avoid polluting the context window.
 
-Commit both directories with the repo so memory persists across machines and sessions.
+Commit both directories when used so memory persists across machines and sessions.

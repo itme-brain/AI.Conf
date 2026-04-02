@@ -21,7 +21,7 @@ Version 1 standardizes:
 - portable tool classes
 - protected path rules
 - dangerous shell command prompts
-- target-specific escape hatches only when the target exposes settings with no shared equivalent
+- a narrow set of target-specific escape hatches for compatibility overrides
 
 Version 1 does not attempt to standardize:
 
@@ -50,13 +50,20 @@ Version 1 does not attempt to standardize:
 
 ### `targets`
 
-Target blocks are escape hatches, not the main schema. Use them only where a runtime exposes a knob with no shared equivalent.
+Target blocks are escape hatches, not the main schema.
 
 Current target-specific fields:
 
 - `targets.claude.claude_md_excludes`
-- `targets.codex.approval_policy`
-- `targets.codex.network_access`
+- `targets.codex.approval_policy` (optional override of derived approval)
+- `targets.codex.network_access` (optional override of derived network access)
+
+Authority rules:
+
+- `runtime.approval` and `runtime.network_access` are the portable source of truth.
+- Codex target fields exist for explicit compatibility overrides and should normally be omitted.
+- When Codex target fields are set, they intentionally override the derived Codex value.
+- In this repo, `targets.codex.approval_policy` and `targets.codex.network_access` are intentionally set so Codex runs with `approval_policy = "never"` and network enabled by default. This is a deliberate target-specific compatibility choice, not an accidental divergence.
 
 ## Adapter rules
 
@@ -81,15 +88,16 @@ Lossiness:
 
 - `runtime.filesystem = read-only` -> `sandbox_mode = "read-only"`
 - `runtime.filesystem = workspace-write` -> `sandbox_mode = "workspace-write"`
-- `runtime.approval = manual` -> `approval_policy = "on-request"`
-- `runtime.approval = guarded-auto` -> `approval_policy = "untrusted"`
-- `runtime.approval = full-auto` -> `approval_policy = "never"`
+- `runtime.approval = manual` -> `approval_policy = "on-request"` (unless overridden)
+- `runtime.approval = guarded-auto` -> `approval_policy = "untrusted"` (unless overridden)
+- `runtime.approval = full-auto` -> `approval_policy = "never"` (unless overridden)
 - `runtime.network_access` -> `[sandbox_workspace_write].network_access`
 
 Lossiness:
 
 - Codex does not expose Claude-style per-tool `allow` / `deny` / `ask` pattern controls in `config.toml`.
 - Protected paths and dangerous command prompts are therefore only partially representable in Codex config today.
+- Codex does expose coarse approval controls, including `approval_policy` and documented granular approval categories, but not the same pattern-level permission model Claude exposes.
 
 ## Compatibility contract
 

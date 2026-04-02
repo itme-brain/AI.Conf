@@ -149,10 +149,12 @@
                 "on-request",
                 "untrusted",
                 "never"
-              ]
+              ],
+              "description": "Codex-only compatibility override. Prefer runtime.approval as the portable source of truth."
             },
             "network_access": {
-              "type": "boolean"
+              "type": "boolean",
+              "description": "Codex-only compatibility override. Prefer runtime.network_access as the portable source of truth."
             }
           }
         }
