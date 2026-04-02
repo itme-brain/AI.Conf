@@ -1,6 +1,7 @@
 ---
 name: worker-protocol
 description: Standard output format, feedback handling, and operational procedures for all worker agents.
+when_to_use: Loaded by worker, debugger, and documenter agents. Defines the worker_submission envelope format and commit workflow.
 ---
 
 ## Output format

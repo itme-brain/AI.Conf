@@ -4,7 +4,6 @@ description: Use when asked to write or update documentation — READMEs, API re
 model: sonnet
 effort: high
 memory: project
-permissionMode: acceptEdits
 tools: Read, Write, Edit, Glob, Grep, Bash
 maxTurns: 20
 skills:

@@ -1,6 +1,7 @@
 ---
 name: project
 description: Instructs agents to check for and ingest a project-specific skill file before starting work.
+when_to_use: Loaded by all agents. Checks for .claude/skills/project.md in the working directory and ingests project-local conventions.
 ---
 
 Before starting any work, check for a project-specific skill file at `.claude/skills/project.md` in the current working directory.

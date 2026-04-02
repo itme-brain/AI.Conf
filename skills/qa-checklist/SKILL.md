@@ -1,6 +1,7 @@
 ---
 name: qa-checklist
 description: Self-validation checklist. All workers run this against their own output before returning results.
+when_to_use: Loaded by all agents that produce output envelopes. Run before returning results to validate factual accuracy, scope, security, and schema compliance.
 ---
 
 ## Self-QA checklist
