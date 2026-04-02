@@ -5,7 +5,6 @@ model: opus
 effort: max
 permissionMode: plan
 tools: Read, Glob, Grep, WebFetch, WebSearch, Bash, Write
-disallowedTools: NotebookEdit
 maxTurns: 35
 skills:
   - conventions
