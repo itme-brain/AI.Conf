@@ -122,5 +122,35 @@ create_symlink      "$RULES_SRC"     "$RULES_DST"     "rules"
 create_file_symlink "$CLAUDE_MD_SRC" "$CLAUDE_MD_DST" "CLAUDE.md"
 create_file_symlink "$SETTINGS_SRC"  "$SETTINGS_DST"  "settings.json"
 
+# Codex CLI integration (optional — only if ~/.codex exists)
+CODEX_DIR="$HOME/.codex"
+CODEX_AGENTS_DIR="$HOME/.agents"
+
+if [ -d "$CODEX_DIR" ]; then
+    echo ""
+    echo "Codex CLI detected at $CODEX_DIR"
+
+    # Skills shared via ~/.agents/skills/ (Codex discovery path)
+    mkdir -p "$CODEX_AGENTS_DIR"
+    create_symlink "$SKILLS_SRC" "$CODEX_AGENTS_DIR/skills" "codex skills"
+
+    # Generated agents
+    if [ -d "$SCRIPT_DIR/codex/agents" ]; then
+        create_symlink "$SCRIPT_DIR/codex/agents" "$CODEX_DIR/agents" "codex agents"
+    else
+        echo "Run ./generate-codex.sh first to generate Codex agent definitions"
+    fi
+
+    # Generated AGENTS.md (symlink to project root for Codex discovery)
+    if [ -f "$SCRIPT_DIR/codex/AGENTS.md" ]; then
+        create_file_symlink "$SCRIPT_DIR/codex/AGENTS.md" "$CODEX_DIR/AGENTS.md" "codex AGENTS.md"
+    fi
+
+    # Generated config.toml
+    if [ -f "$SCRIPT_DIR/codex/config.toml" ]; then
+        create_file_symlink "$SCRIPT_DIR/codex/config.toml" "$CODEX_DIR/config.toml" "codex config.toml"
+    fi
+fi
+
 echo ""
 echo "Done. Open Claude Code and load the orchestrate skill to begin."

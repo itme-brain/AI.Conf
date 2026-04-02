@@ -59,6 +59,35 @@ For simple tasks, agents can be invoked directly:
 /agent worker Fix the broken pagination in the user list endpoint
 ```
 
+## Codex CLI compatibility
+
+This project also generates configuration for [OpenAI Codex CLI](https://github.com/openai/codex). Claude Code config is the source of truth; Codex config is derived from it.
+
+### Setup
+
+```bash
+nix develop              # enter devShell with yq
+./generate-codex.sh      # generate Codex config from Claude source files
+./install.sh             # installs both Claude and Codex (if ~/.codex exists)
+```
+
+### What gets generated
+
+| Source | Generated | Codex location |
+|---|---|---|
+| `agents/*.md` | `codex/agents/*.toml` | `~/.codex/agents/` |
+| `CLAUDE.md` + `rules/*.md` | `codex/AGENTS.md` | `~/.codex/AGENTS.md` |
+| `settings.json` | `codex/config.toml` | `~/.codex/config.toml` |
+| `skills/` | (shared as-is) | `~/.agents/skills/` |
+
+### Model mapping
+
+| Claude Code | Codex CLI |
+|---|---|
+| `opus` | `o3` |
+| `sonnet` | `o4-mini` |
+| `haiku` | `o4-mini` |
+
 ## Project-specific config
 
 Each project repo can extend the team with local config in `.claude/`:

@@ -8,3 +8,6 @@ settings.local.json
 # OS noise
 .DS_Store
 Thumbs.db
+
+# Generated Codex CLI config (derived from Claude source files via generate-codex.sh)
+codex/
