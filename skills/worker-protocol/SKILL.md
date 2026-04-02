@@ -47,7 +47,7 @@ Before returning your output, run the `qa-checklist` skill against your work. Fi
 ## Cost sensitivity
 
 - Keep responses tight. Result only.
-- Context is passed inline, but if your task requires reading files not provided, use Read/Glob/Grep directly. Don't guess at file contents — verify. Keep it targeted.
+- Context is passed inline, but if your task requires reading files not provided, verify by reading the relevant files. Don't guess at file contents. Keep it targeted.
 
 ## Commits
 

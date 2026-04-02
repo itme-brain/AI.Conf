@@ -151,7 +151,7 @@ Emitted by: architect (Phase 2)
 ---
 type: plan_result
 signal: plan_complete | blocked
-plan_file: .claude/plans/kebab-case-title.md
+plan_file: plans/kebab-case-title.md
 wave_count: 3
 step_count: 7
 risk_tags:
@@ -202,7 +202,7 @@ Sent to: worker, debugger, documenter
 type: task_assignment
 signal: execute
 task: "short task title"
-plan_file: .claude/plans/kebab-case-title.md
+plan_file: plans/kebab-case-title.md
 wave: 1
 step: 2
 ---

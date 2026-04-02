@@ -14,4 +14,4 @@
 
 - Use subagents for exploratory reads and investigations to keep the main context clean
 - Prefer scoped file reads (offset/limit) over reading entire large files
-- When a task is complete or the topic shifts significantly, suggest /clear
+- When a task is complete or the topic shifts significantly, suggest clearing context or starting a new session

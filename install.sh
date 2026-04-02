@@ -6,15 +6,15 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CLAUDE_DIR="$HOME/.claude"
-AGENTS_SRC="$SCRIPT_DIR/agents"
+AGENTS_SRC="$SCRIPT_DIR/claude/agents"
 SKILLS_SRC="$SCRIPT_DIR/skills"
 RULES_SRC="$SCRIPT_DIR/rules"
 AGENTS_DST="$CLAUDE_DIR/agents"
 SKILLS_DST="$CLAUDE_DIR/skills"
 RULES_DST="$CLAUDE_DIR/rules"
-CLAUDE_MD_SRC="$SCRIPT_DIR/CLAUDE.md"
+CLAUDE_MD_SRC="$SCRIPT_DIR/claude/CLAUDE.md"
 CLAUDE_MD_DST="$CLAUDE_DIR/CLAUDE.md"
-SETTINGS_SRC="$SCRIPT_DIR/settings.json"
+SETTINGS_SRC="$SCRIPT_DIR/claude/settings.json"
 SETTINGS_DST="$CLAUDE_DIR/settings.json"
 
 # Detect OS
@@ -29,6 +29,12 @@ echo "Detected OS: $OS"
 echo "Source:       $SCRIPT_DIR"
 echo "Target:       $CLAUDE_DIR"
 echo ""
+
+# Pre-flight: require generated claude/ output before proceeding
+if [ ! -d "$SCRIPT_DIR/claude" ]; then
+    echo "Error: claude/ not found. Run ./generate.sh first."
+    exit 1
+fi
 
 # Ensure ~/.claude exists
 mkdir -p "$CLAUDE_DIR"
@@ -130,6 +136,11 @@ if [ -d "$CODEX_DIR" ]; then
     echo ""
     echo "Codex CLI detected at $CODEX_DIR"
 
+    # Warn if generated codex/ output is missing
+    if [ ! -d "$SCRIPT_DIR/codex" ]; then
+        echo "Warning: codex/ not found. Run ./generate.sh first to generate Codex output."
+    fi
+
     # Skills shared via ~/.agents/skills/ (Codex discovery path)
     mkdir -p "$CODEX_AGENTS_DIR"
     create_symlink "$SKILLS_SRC" "$CODEX_AGENTS_DIR/skills" "codex skills"
@@ -138,7 +149,7 @@ if [ -d "$CODEX_DIR" ]; then
     if [ -d "$SCRIPT_DIR/codex/agents" ]; then
         create_symlink "$SCRIPT_DIR/codex/agents" "$CODEX_DIR/agents" "codex agents"
     else
-        echo "Run ./generate-codex.sh first to generate Codex agent definitions"
+        echo "Run ./generate.sh first to generate Codex agent definitions"
     fi
 
     # Generated AGENTS.md (symlink to project root for Codex discovery)

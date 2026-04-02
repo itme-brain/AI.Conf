@@ -9,7 +9,7 @@ when_to_use: Loaded by all agents that produce output envelopes. Run before retu
 Before returning your output, validate against every item below. If you find a violation, fix it — don't just note it.
 
 ### Factual accuracy
-- Every file path, function name, class name, and line number you reference — does it actually exist? Verify with Read/Grep if uncertain. Never guess paths or signatures.
+- Every file path, function name, class name, and line number you reference — does it actually exist? Verify by reading the code if uncertain. Never guess paths or signatures.
 - Every version number, API endpoint, or external reference — is it correct? If you can't verify, say "unverified" explicitly.
 - No invented specifics. If you don't know something, say so.
 

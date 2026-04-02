@@ -7,10 +7,12 @@ A portable Claude Code agent team configuration. Clone it, run `install.sh`, and
 ```bash
 git clone <repo-url> ~/agent-team
 cd ~/agent-team
-./install.sh
+nix develop              # enter devShell with yq + envsubst
+./generate.sh            # generate Claude + Codex config from templates
+./install.sh             # symlinks into ~/.claude/ and ~/.codex/ (if present)
 ```
 
-The script symlinks `agents/`, `skills/`, `rules/`, `CLAUDE.md`, and `settings.json` into `~/.claude/`. Works on Linux, macOS, and Windows (Git Bash).
+The scripts generate configuration for both Claude Code and Codex CLI (if `~/.codex/` exists), then symlink agents, skills, rules, CLAUDE.md, and settings.json into `~/.claude/`. Works on Linux, macOS, and Windows (Git Bash).
 
 ## Maintenance
 
@@ -66,19 +68,20 @@ This project also generates configuration for [OpenAI Codex CLI](https://github.
 ### Setup
 
 ```bash
-nix develop              # enter devShell with yq
-./generate-codex.sh      # generate Codex config from Claude source files
+nix develop              # enter devShell with yq + envsubst
+./generate.sh            # generate Claude + Codex config from templates
 ./install.sh             # installs both Claude and Codex (if ~/.codex exists)
 ```
 
 ### What gets generated
 
-| Source | Generated | Codex location |
+| Source | Generated | Location |
 |---|---|---|
-| `agents/*.md` | `codex/agents/*.toml` | `~/.codex/agents/` |
+| `agents/*.md` (templates) | `claude/agents/*.md` | `~/.claude/agents/` |
+| `agents/*.md` (templates) | `codex/agents/*.toml` | `~/.codex/agents/` |
 | `CLAUDE.md` + `rules/*.md` | `codex/AGENTS.md` | `~/.codex/AGENTS.md` |
 | `settings.json` | `codex/config.toml` | `~/.codex/config.toml` |
-| `skills/` | (shared as-is) | `~/.agents/skills/` |
+| `skills/` | (shared as-is) | `~/.claude/skills/` + `~/.agents/skills/` |
 
 ### Model mapping
 
@@ -87,6 +90,18 @@ nix develop              # enter devShell with yq
 | `opus` | `o3` |
 | `sonnet` | `o4-mini` |
 | `haiku` | `o4-mini` |
+
+### Template variables
+
+Agent body text uses `${VAR}` placeholders that are expanded per-target by `generate.sh`:
+
+| Variable | Claude | Codex |
+|---|---|---|
+| `${PLANS_DIR}` | `.claude/plans` | `plans` |
+| `${WEB_SEARCH}` | `via WebFetch/WebSearch` | `via web search` |
+| `${SEARCH_TOOLS}` | `Use Grep/Glob/Read` | `Search the codebase` |
+
+Skills and rules are tool-agnostic and shared as-is — do not add tool-specific references to them.
 
 ## Project-specific config
 
