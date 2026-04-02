@@ -20,15 +20,13 @@ The script symlinks `agents/`, `skills/`, `CLAUDE.md`, and `settings.json` into 
 
 | Agent | Model | Role |
 |---|---|---|
-| `grunt` | haiku | Trivial tasks — typos, renames, one-liners. No planning or review. |
-| `worker` | sonnet | Default implementer for well-defined tasks. |
-| `senior-worker` | opus | Escalation for architectural complexity or worker failures. |
+| `worker` | sonnet (haiku/opus by orchestrator) | Universal implementer. Model scaled to task complexity. |
 | `debugger` | sonnet | Diagnoses and fixes bugs with minimal targeted changes. |
-| `docs-writer` | sonnet | Writes and updates docs. Never modifies source code. |
-| `architect` | opus | Research-first planning. Produces implementation plans for workers. Read-only. |
-| `code-reviewer` | sonnet | Reviews diffs for quality, correctness, and coverage. Read-only. |
-| `security-auditor` | opus | Audits security-sensitive changes for vulnerabilities. Read-only. |
-| `karen` | opus | Independent fact-checker. Verifies worker output against source and web. Read-only, runs in background. |
+| `documenter` | sonnet | Writes and updates docs. Never modifies source code. |
+| `architect` | opus | Triage, research coordination, architecture design, wave decomposition. Read-only. |
+| `researcher` | sonnet | Parallel fact-finding. One instance per research question. Read-only. |
+| `reviewer` | sonnet | Code quality review + AC verification + claim checking. Read-only. |
+| `auditor` | sonnet | Security analysis + runtime validation. Read-only, runs in background. |
 
 ## Skills
 

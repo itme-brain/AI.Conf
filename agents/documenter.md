@@ -1,5 +1,5 @@
 ---
-name: docs-writer
+name: documenter
 description: Use when asked to write or update documentation — READMEs, API references, architecture overviews, inline doc comments, or changelogs. Reads code first, writes accurate docs. Never modifies source code.
 model: sonnet
 effort: high
