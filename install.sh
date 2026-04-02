@@ -9,6 +9,7 @@ CLAUDE_DIR="$HOME/.claude"
 AGENTS_SRC="$SCRIPT_DIR/claude/agents"
 SKILLS_SRC="$SCRIPT_DIR/skills"
 RULES_SRC="$SCRIPT_DIR/rules"
+TEAM_YAML="$SCRIPT_DIR/TEAM.yaml"
 AGENTS_DST="$CLAUDE_DIR/agents"
 SKILLS_DST="$CLAUDE_DIR/skills"
 RULES_DST="$CLAUDE_DIR/rules"
@@ -122,6 +123,48 @@ create_file_symlink() {
     echo "Linked: $dst -> $src"
 }
 
+# Return one skill id per line for a target platform from TEAM.yaml.
+# Falls back to empty output when TEAM.yaml is unavailable.
+list_team_skills_for_target() {
+    local target="$1"
+
+    if [ ! -f "$TEAM_YAML" ]; then
+        return 0
+    fi
+
+    # Validate TEAM parseability before resolving inventory.
+    yq -e '.version == 1 and has("skills") and (.skills | has("order")) and (.skills | has("items"))' "$TEAM_YAML" > /dev/null
+
+    local skill_id applies
+    while IFS= read -r skill_id; do
+        [ -n "$skill_id" ] || continue
+        applies="$(yq -r ".skills.items.\"$skill_id\".applies_to[]? // \"\"" "$TEAM_YAML")"
+        if printf '%s\n' "$applies" | grep -Fxq "$target"; then
+            printf '%s\n' "$skill_id"
+        fi
+    done < <(yq -r '.skills.order[]' "$TEAM_YAML")
+}
+
+# Resolve a TEAM skill id to its source directory using instruction_file.
+resolve_skill_dir_from_team() {
+    local skill_id="$1"
+
+    if [ ! -f "$TEAM_YAML" ]; then
+        return 1
+    fi
+
+    local instruction_file skill_dir
+    instruction_file="$(
+        yq -r ".skills.items.\"$skill_id\".instruction_file // \"\"" "$TEAM_YAML"
+    )"
+    [ -n "$instruction_file" ] || return 1
+
+    skill_dir="$(dirname "$SCRIPT_DIR/$instruction_file")"
+    [ -d "$skill_dir" ] || return 1
+
+    printf '%s\n' "$skill_dir"
+}
+
 create_symlink      "$AGENTS_SRC"    "$AGENTS_DST"    "agents"
 create_symlink      "$SKILLS_SRC"    "$SKILLS_DST"    "skills"
 create_symlink      "$RULES_SRC"     "$RULES_DST"     "rules"
@@ -139,10 +182,35 @@ if [ -d "$SCRIPT_DIR/codex" ]; then
     # Skills: symlink each skill directory into ~/.codex/skills/
     # (Can't replace the whole directory — .system/ must remain intact)
     mkdir -p "$CODEX_DIR/skills"
-    for skill_dir in "$SKILLS_SRC"/*/; do
-        skill_name="$(basename "$skill_dir")"
-        create_symlink "$skill_dir" "$CODEX_DIR/skills/$skill_name" "codex skill: $skill_name"
-    done
+    if [ -f "$TEAM_YAML" ]; then
+        team_codex_skills_tmp="$(mktemp)"
+        if ! list_team_skills_for_target "codex" > "$team_codex_skills_tmp" 2>/dev/null; then
+            echo "Warning: TEAM.yaml exists but could not be parsed; falling back to directory-based Codex skill install."
+            for skill_dir in "$SKILLS_SRC"/*/; do
+                skill_name="$(basename "$skill_dir")"
+                create_symlink "$skill_dir" "$CODEX_DIR/skills/$skill_name" "codex skill: $skill_name"
+            done
+            rm -f "$team_codex_skills_tmp"
+        else
+            # TEAM is authoritative when present, including the explicit zero-skills case.
+            while IFS= read -r skill_id; do
+                [ -n "$skill_id" ] || continue
+                skill_dir="$(resolve_skill_dir_from_team "$skill_id" || true)"
+                if [ -z "$skill_dir" ]; then
+                    echo "Warning: TEAM.yaml skill '$skill_id' has no valid instruction_file directory; skipping."
+                    continue
+                fi
+                create_symlink "$skill_dir" "$CODEX_DIR/skills/$skill_id" "codex skill: $skill_id"
+            done < "$team_codex_skills_tmp"
+            rm -f "$team_codex_skills_tmp"
+        fi
+    else
+        # Legacy fallback only when TEAM.yaml is absent.
+        for skill_dir in "$SKILLS_SRC"/*/; do
+            skill_name="$(basename "$skill_dir")"
+            create_symlink "$skill_dir" "$CODEX_DIR/skills/$skill_name" "codex skill: $skill_name"
+        done
+    fi
 
     # Generated agents
     if [ -d "$SCRIPT_DIR/codex/agents" ]; then

@@ -10,7 +10,9 @@ settings.local.json
 Thumbs.db
 
 # Generated output (derived from source templates via generate.sh)
+settings.json
 claude/
 codex/
 .claude
 .codex
+.direnv
