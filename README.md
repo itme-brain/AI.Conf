@@ -1,6 +1,6 @@
 # agent-team
 
-A portable Claude Code agent team configuration. Clone it, run `install.sh`, and your Claude Code sessions get a full team of specialized subagents and shared skills — on any machine.
+A portable agent team configuration for Claude Code and Codex CLI. Clone it, run `./generate.sh` + `./install.sh`, and both tools get a full team of specialized subagents and shared skills — on any machine.
 
 ## Quick install
 
@@ -12,7 +12,7 @@ nix develop              # enter devShell with yq + envsubst
 ./install.sh             # symlinks into ~/.claude/ and ~/.codex/ (if present)
 ```
 
-The scripts generate configuration for both Claude Code and Codex CLI (if `~/.codex/` exists), then symlink agents, skills, rules, CLAUDE.md, and settings.json into `~/.claude/`. Works on Linux, macOS, and Windows (Git Bash).
+`generate.sh` expands shared agent templates into tool-specific outputs for Claude Code and Codex CLI. `install.sh` symlinks the results into `~/.claude/` and `~/.codex/`. Works on Linux, macOS, and Windows (Git Bash).
 
 ## Maintenance
 
@@ -47,7 +47,9 @@ Global instructions are modularized in `rules/` and auto-loaded by Claude Code f
 
 ## How to use
 
-In an interactive Claude Code session, load the orchestrate skill when a task is complex enough to warrant delegation:
+### Claude Code
+
+Load the orchestrate skill when a task is complex enough to warrant delegation:
 
 ```
 /skill orchestrate
@@ -55,23 +57,23 @@ In an interactive Claude Code session, load the orchestrate skill when a task is
 
 Once loaded, Claude acts as orchestrator — decomposing tasks, selecting agents, reviewing output, and managing the git flow. Agents are auto-delegated based on task type; you don't invoke them directly.
 
-For simple tasks, agents can be invoked directly:
+For simple tasks, invoke an agent directly:
 
 ```
 /agent worker Fix the broken pagination in the user list endpoint
 ```
 
-## Codex CLI compatibility
+### Codex CLI
 
-This project also generates configuration for [OpenAI Codex CLI](https://github.com/openai/codex). Claude Code config is the source of truth; Codex config is derived from it.
+Agents are available as named agents in `~/.codex/agents/`. Invoke them with:
 
-### Setup
-
-```bash
-nix develop              # enter devShell with yq + envsubst
-./generate.sh            # generate Claude + Codex config from templates
-./install.sh             # installs both Claude and Codex (if ~/.codex exists)
 ```
+codex --agent worker "Fix the broken pagination in the user list endpoint"
+```
+
+## Dual-target generation
+
+Agent source files in `agents/` are the single source of truth. `generate.sh` derives tool-specific outputs for both Claude Code and [OpenAI Codex CLI](https://github.com/openai/codex).
 
 ### What gets generated
 
@@ -83,7 +85,7 @@ nix develop              # enter devShell with yq + envsubst
 | `settings.json` | `codex/config.toml` | `~/.codex/config.toml` |
 | `skills/` | (shared as-is) | `~/.claude/skills/` + `~/.agents/skills/` |
 
-### Model mapping
+## Model mapping
 
 | Claude Code | Codex CLI |
 |---|---|
@@ -91,7 +93,7 @@ nix develop              # enter devShell with yq + envsubst
 | `sonnet` | `gpt-5.3-codex` |
 | `haiku` | `gpt-5.1-codex-mini` |
 
-### Template variables
+## Template variables
 
 Agent body text uses `${VAR}` placeholders that are expanded per-target by `generate.sh`:
 

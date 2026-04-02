@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# install.sh — symlinks agent-team into ~/.claude/
+# install.sh — symlinks agent-team into ~/.claude/ and ~/.codex/ (if present)
 # Works on Windows (Git Bash/MSYS2), Linux, and macOS.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

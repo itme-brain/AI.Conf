@@ -12,3 +12,5 @@ Thumbs.db
 # Generated output (derived from source templates via generate.sh)
 claude/
 codex/
+.claude
+.codex
