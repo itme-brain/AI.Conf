@@ -4,7 +4,6 @@
     "commit": "",
     "pr": ""
   },
-  "includeGitInstructions": true,
   "permissions": {
     "allow": [
       "Bash",
@@ -51,9 +50,7 @@
     "defaultMode": "acceptEdits"
   },
   "model": "sonnet",
-  "syntaxHighlightingDisabled": false,
   "effortLevel": "medium",
-  "autoUpdatesChannel": "stable",
   "claudeMdExcludes": [
     ".claude/agent-memory/**"
   ]
