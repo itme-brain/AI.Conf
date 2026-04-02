@@ -5,14 +5,27 @@ description: Standard output format, feedback handling, and operational procedur
 
 ## Output format
 
-Return using this structure. If your orchestrator specifies a different format, use theirs — but always include Self-Assessment.
+Wrap your output in a `worker_submission` envelope per the message-schema skill:
+
+```yaml
+---
+type: worker_submission
+signal: rfr | blocked | escalate
+files_changed:
+  - path/to/file1
+  - path/to/file2
+ac_coverage:
+  AC1: pass | fail | partial | na
+  AC2: pass | fail | partial | na
+qa_check: pass | fail
+---
+```
+
+Then the markdown body:
 
 ```
 ## Result
 [Your deliverable here]
-
-## Files Changed
-[List files modified/created, or "N/A" if not a code task]
 
 ## Self-Assessment
 - Acceptance criteria met: [yes/no per criterion, one line each]
@@ -37,11 +50,11 @@ Before returning your output, run the `qa-checklist` skill against your work. Fi
 
 ## Commits
 
-Do not commit until your orchestrator sends `LGTM`. End your output with `RFR` to signal you're ready for review.
+Do not commit until your orchestrator sends `signal: lgtm`. Your output envelope's `signal: rfr` replaces the old freetext `RFR` — the envelope IS the signal.
 
-- `RFR` — you → orchestrator: work complete, ready for review
-- `LGTM` — orchestrator → you: approved, commit now
-- `REVISE` — orchestrator → you: needs fixes (issues attached)
+- `signal: rfr` — you → orchestrator: work complete, ready for review
+- `signal: lgtm` — orchestrator → you: approved, commit now
+- `signal: revise` — orchestrator → you: needs fixes (issues attached)
 
 When you receive `LGTM`:
 - Commit using conventional commit format per project conventions

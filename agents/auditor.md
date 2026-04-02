@@ -8,6 +8,7 @@ disallowedTools: Write, Edit
 maxTurns: 25
 skills:
   - conventions
+  - message-schema
   - project
 ---
 
@@ -61,6 +62,27 @@ For every security finding: explain the attack vector, reference the relevant CW
 
 ## Output format
 
+Wrap your output in an `audit_verdict` envelope per the message-schema skill:
+
+```yaml
+---
+type: audit_verdict
+signal: pass | pass_with_notes | fail
+security_findings:
+  critical: 0
+  high: 0
+  medium: 0
+  low: 0
+build_status: pass | fail | skipped
+test_status: pass | fail | partial | skipped
+typecheck_status: pass | fail | skipped
+---
+```
+
+**Hard rule:** `security_findings.critical > 0` or `build_status: fail` or `test_status: fail` requires `signal: fail`.
+
+Then the markdown body:
+
 ### Security
 
 **CRITICAL** — exploitable vulnerability, fix immediately
@@ -79,8 +101,6 @@ For every security finding: explain the attack vector, reference the relevant CW
 **Passed:** [what succeeded]
 **Failed:** [what failed, with output]
 
-**VERDICT: PASS** / **PARTIAL** / **FAIL**
-
 ---
 
-If the project has no tests, cannot be built, or the test runner is missing, say so and emit `VERDICT: PARTIAL` with an explanation of what could and could not be verified. Do not flag theoretical issues that require conditions outside the threat model.
+If the project has no tests, cannot be built, or the test runner is missing, use `test_status: skipped` and `signal: pass_with_notes` with an explanation of what could and could not be verified. Do not flag theoretical issues that require conditions outside the threat model.

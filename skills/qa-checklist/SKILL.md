@@ -39,9 +39,17 @@ Before returning your output, validate against every item below. If you find a v
 - If you stated something as fact, can you back it up? Challenge your own claims.
 - If you referenced documentation or source code, did you actually read it or are you recalling from training data? When it matters, verify.
 
+### Schema compliance
+- Does your output start with a valid YAML frontmatter envelope (`---` delimiters)?
+- Does the `type` field match your message type?
+- Does the `signal` field use a valid enum value from the message-schema skill?
+- Are all required fields for your message type present?
+- Are hard rules satisfied (e.g., `critical_count > 0` requires `signal: fail`)?
+
 ## After validation
 
+Set `qa_check: pass` or `qa_check: fail` in your frontmatter envelope. This replaces the old `QA self-check` prose line.
+
 In your Self-Assessment section, include:
-- `QA self-check: [pass/fail]` — did your output survive the checklist?
-- If fail: what you found and fixed before submission
+- If qa_check is fail: what you found and fixed before submission
 - If anything remains unverifiable, flag it explicitly as `Unverified: [claim]`

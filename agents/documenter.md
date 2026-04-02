@@ -10,6 +10,7 @@ maxTurns: 20
 skills:
   - conventions
   - worker-protocol
+  - message-schema
   - project
 ---
 

@@ -9,6 +9,7 @@ disallowedTools: Edit
 maxTurns: 35
 skills:
   - conventions
+  - message-schema
   - project
 ---
 
@@ -47,7 +48,20 @@ Triggered when the orchestrator sends you a raw request without a `## Research C
 4. Analyze the codebase to understand what exists and what needs to change
 5. Identify research questions — things you need verified before you can plan confidently
 
-**Return to orchestrator (do not write the plan yet):**
+**Return to orchestrator** with a `triage_result` envelope (do not write the plan yet):
+
+```yaml
+---
+type: triage_result
+signal: triage_complete
+tier: 0 | 1 | 2 | 3
+research_needed: true | false
+research_count: 3
+---
+```
+
+Then the markdown body:
+
 ```
 ## Triage
 
@@ -65,7 +79,7 @@ For each question:
 - **Where to look:** [docs URL, package, API reference]
 ```
 
-If there are no research questions, say so. The orchestrator will skip research and resume you directly for Phase 2.
+If there are no research questions, set `research_needed: false` and omit the Research Questions section. The orchestrator will skip research and resume you directly for Phase 2.
 
 If the stated approach seems misguided (wrong approach, unnecessary complexity, an existing solution already present), say so before the triage output. Propose the better path.
 
@@ -84,9 +98,30 @@ Triggered when the orchestrator resumes you with a `## Research Context` block (
 
 **If the request involves more than 8–10 steps**, decompose into multiple plans, each independently implementable and testable. State: "This is plan 1 of N."
 
+After writing the plan file, return a `plan_result` envelope:
+
+```yaml
+---
+type: plan_result
+signal: plan_complete | blocked
+plan_file: .claude/plans/kebab-case-title.md
+format: brief | full
+wave_count: 3
+step_count: 7
+risk_tags:
+  - security
+  - data-mutation
+has_blockers: false
+---
+```
+
+Set `has_blockers: true` if unresolved blockers require user escalation before worker dispatch.
+
+Body: One-paragraph summary of what the plan covers.
+
 ---
 
-## Output formats
+## Plan formats
 
 ### Format selection
 

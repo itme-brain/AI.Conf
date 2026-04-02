@@ -1,11 +1,13 @@
 ---
-name: TODO — formal JSON schema for inter-agent communication
-description: Planned work to replace informal signal/text conventions with a typed JSON schema for all inter-agent messages
+name: Inter-agent communication schema — implemented
+description: Typed YAML frontmatter envelopes for all inter-agent messages, replacing freetext signals. Defined in skills/message-schema/SKILL.md.
 type: project
 ---
 
-Define a formal JSON schema for all inter-agent communication in the agent team.
+Formal inter-agent communication schema implemented via the `message-schema` skill.
 
-**Why:** Current protocol relies on freetext signals (RFR, LGTM, REVISE, VERDICT: PASS, etc.) and unstructured prose output. A typed schema would make messages machine-readable, easier to validate, and more reliable for orchestrator parsing — especially as parallelism increases and the orchestrator is managing multiple concurrent agent outputs.
+**What:** All agent output and orchestrator dispatch uses YAML frontmatter envelopes with a `signal` field as the primary routing key. 12 message types cover worker submissions, review/audit verdicts, triage/plan results, research results, and orchestrator commands.
 
-**How to apply:** Design the schema before any further changes to the orchestrate skill or agent protocols. All agent output formats (reviewer verdict, auditor verdict, worker RFR, architect triage response, etc.) should conform to it. Consider whether the schema lives as a skill, a standalone JSON Schema file, or embedded in agent frontmatter.
+**Why:** Freetext signals (RFR, LGTM, VERDICT: PASS) were ambiguous and required prose parsing. Typed envelopes give the orchestrator a consistent, unambiguous routing key.
+
+**How to apply:** Every agent loads the `message-schema` skill. The qa-checklist includes schema compliance checks. The orchestrate skill routes by reading the `signal` field from agent output envelopes.

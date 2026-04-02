@@ -1,1 +1,1 @@
-- [TODO: inter-agent JSON schema](todo_inter_agent_schema.md) — formal typed schema for all inter-agent messages to replace freetext signals
+- [Inter-agent communication schema](todo_inter_agent_schema.md) — YAML frontmatter envelopes implemented via message-schema skill

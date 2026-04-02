@@ -36,6 +36,7 @@ The script symlinks `agents/`, `skills/`, `rules/`, `CLAUDE.md`, and `settings.j
 | `conventions` | Core coding conventions and quality priorities shared by all agents |
 | `worker-protocol` | Output format, feedback handling, and operational procedures for worker agents |
 | `qa-checklist` | Self-validation checklist workers run before returning results |
+| `message-schema` | Typed YAML frontmatter envelopes for all inter-agent communication |
 | `project` | Instructs agents to check for and ingest a project-specific skill file before starting work |
 
 ## Rules

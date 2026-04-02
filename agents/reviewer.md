@@ -8,6 +8,7 @@ disallowedTools: Write, Edit
 maxTurns: 20
 skills:
   - conventions
+  - message-schema
   - project
 ---
 
@@ -39,6 +40,25 @@ On **resubmissions**, the orchestrator will include a delta of what changed. Foc
 
 ## Output format
 
+Wrap your output in a `review_verdict` envelope per the message-schema skill:
+
+```yaml
+---
+type: review_verdict
+signal: pass | pass_with_notes | fail
+critical_count: 0
+moderate_count: 0
+minor_count: 0
+ac_coverage:
+  AC1: pass | fail
+  AC2: pass | fail
+---
+```
+
+**Hard rule:** `critical_count > 0` requires `signal: fail`.
+
+Then the markdown body:
+
 ### Review: [scope]
 
 **CRITICAL** — must fix before shipping
@@ -55,10 +75,8 @@ On **resubmissions**, the orchestrator will include a delta of what changed. Foc
 - AC2: PASS / FAIL — [one line]
 - ...
 
-**VERDICT: PASS** / **PASS WITH NOTES** / **FAIL**
-
 One line summary.
 
 ---
 
-Keep it tight. One line per issue unless the explanation genuinely needs more. Reference file:line for every finding. If nothing is wrong, return `VERDICT: PASS` + 1-line summary.
+Keep it tight. One line per issue unless the explanation genuinely needs more. Reference file:line for every finding. If nothing is wrong, return `signal: pass` + 1-line summary.

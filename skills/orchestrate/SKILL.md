@@ -108,12 +108,17 @@ After each wave, spawn `reviewer` and `auditor` in a single response. They run i
 
 Both receive: worker output, plan file path, acceptance criteria list, risk tags.
 
-Collect both verdicts before deciding whether to advance to the next wave or send back for fixes.
+**Routing by envelope:** Read the `signal` field from each reviewer/auditor envelope:
+- `signal: pass` → advance to next wave
+- `signal: pass_with_notes` → advance, surface notes in final delivery
+- `signal: fail` → check `critical_count` / `security_findings` and send worker to fix
+
+Do not advance until both verdicts are collected.
 
 ### Step 7 — Feedback loop on issues
 
-1. Resume the worker with reviewer findings and instruction to fix
-2. On resubmission, spawn reviewer again (new instance — stateless)
+1. Resume the worker with a `revision_request` envelope containing reviewer/auditor findings
+2. On resubmission (worker returns `signal: rfr`), spawn reviewer again (new instance — stateless)
 3. Repeat
 
 **Severity-aware decisions:**
@@ -201,21 +206,28 @@ Spawning agents sequentially when they could run in parallel is a protocol viola
 
 ### Git flow
 
-Workers signal `RFR` when done. You control commits:
-- `LGTM` → worker commits
-- Mark a step `- [x]` in the plan file **only when every worker assigned to that step has received LGTM**
-- `REVISE` → worker fixes and resubmits with `RFR`
+Workers return `signal: rfr` when done. You control commits:
+- Send `signal: lgtm` → worker commits
+- Mark a step `- [x]` in the plan file **only when every worker assigned to that step has received `signal: lgtm`**
+- Send `signal: revise` → worker fixes and resubmits with `signal: rfr`
 - Merge worktree branches after individual validation
 - On Tier 2+: merge each worker's branch after validation, resolve conflicts if branches overlap
 
 Only the orchestrator updates the plan file. Workers must not modify `.claude/plans/`.
 
-### Review signals
+### Message schema
 
-| Signal | Direction | Meaning |
+All agent communication uses typed YAML frontmatter envelopes defined in the `message-schema` skill. The `signal` field is your primary routing key.
+
+| Envelope signal | Direction | Your action |
 |---|---|---|
-| `RFR` | worker → orchestrator | Ready for review |
-| `LGTM` | orchestrator → worker | Approved, commit your changes |
-| `REVISE` | orchestrator → worker | Fix the listed issues and resubmit |
-| `VERDICT: PASS / PASS WITH NOTES / FAIL` | reviewer → orchestrator | Review result |
-| `VERDICT: PASS / PARTIAL / FAIL` | auditor → orchestrator | Runtime validation result |
+| `signal: rfr` | worker → you | Dispatch to reviewer (+ auditor if risk tags match) |
+| `signal: pass` | reviewer/auditor → you | Advance to next wave |
+| `signal: pass_with_notes` | reviewer/auditor → you | Advance, surface notes in delivery |
+| `signal: fail` | reviewer/auditor → you | Send `revision_request` to worker |
+| `signal: triage_complete` | architect → you | Check `research_needed`, spawn researchers or resume architect |
+| `signal: plan_complete` | architect → you | Read plan file, begin wave dispatch |
+| `signal: research_complete` | researcher → you | Collect, assemble into Research Context |
+| `signal: blocked` / `signal: escalate` | any → you | Investigate or escalate to user |
+
+When dispatching agents, use the orchestrator→agent envelope types (`task_assignment`, `revision_request`, `approval`, `triage_request`, `architecture_request`, `research_request`) from the message-schema skill.
