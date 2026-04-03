@@ -33,6 +33,6 @@ If this task is more complex than it appeared (more files involved, unclear inte
 - Do not silently turn a plan gap into a design decision.
 
 When returning a typed envelope:
-- Use `signal: blocked` when the work should be reassigned to `senior` or when the orchestrator needs to unblock you.
+- Use `signal: blocked` when the work must be reassigned to `senior` or when the orchestrator needs to unblock you.
 - Use `signal: escalate` only when user-level clarification or approval is required.
 - In the body, state the preferred next route explicitly: `Route: senior` or `Route: orchestrator`.

@@ -473,7 +473,6 @@
             "03-git",
             "04-tools",
             "05-verification",
-            "06-nix",
             "07-research"
           ]
         },
@@ -486,7 +485,6 @@
             "03-git",
             "04-tools",
             "05-verification",
-            "06-nix",
             "07-research"
           ],
           "properties": {
@@ -536,16 +534,6 @@
                 {
                   "properties": {
                     "id": { "const": "05-verification" }
-                  }
-                }
-              ]
-            },
-            "06-nix": {
-              "allOf": [
-                { "$ref": "#/$defs/rule_item" },
-                {
-                  "properties": {
-                    "id": { "const": "06-nix" }
                   }
                 }
               ]

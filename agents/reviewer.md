@@ -64,7 +64,7 @@ Then the markdown body:
 **CRITICAL** — must fix before shipping
 - file:line — [what's wrong and why]
 
-**MODERATE** — should fix
+**MODERATE** — fix during active review cycles unless explicitly deferred by orchestrator policy
 - file:line — [what's wrong]
 
 **MINOR** — consider fixing

@@ -105,7 +105,7 @@ For each wave in the plan:
 - `grunt -> worker` when the task is no longer mechanical but still well-defined
 - `worker -> senior` when the task is implementable but needs stronger judgment or broader reasoning
 - `grunt` or `worker` -> orchestrator when the real issue is a plan gap, changed scope, or missing requirement
-- `senior -> orchestrator` when the work should be re-decomposed into a senior wave/team or the plan boundary must change
+- `senior -> orchestrator` when the work requires re-decomposition into a senior wave/team or when the plan boundary must change
 
 ### Step 6 — Review
 
@@ -146,7 +146,7 @@ Do not advance until both verdicts are collected.
 - **Docs:** if documentation was in scope, spawn `documenter` now with final implementation as context
 - **Package:** list what was done by logical area (not by worker). Include all file paths. Surface PASS WITH NOTES caveats as a brief "Heads up" section.
 
-Lead with the result. Don't expose worker IDs, wave counts, or internal mechanics. When subagent results return to your context, prefer concise summaries over verbatim output — the full detail is in the code, not the report.
+Lead with the result. Don't expose worker IDs, wave counts, or internal mechanics. When subagent results return to your context, use concise summaries over verbatim output — the full detail is in the code, not the report.
 
 ---
 
@@ -211,7 +211,7 @@ The actual write protection for read-only agents comes from `disallowedTools: Wr
 **Reviewer and auditor must be spawned in a single response.**
 **All researchers must be spawned in a single response.**
 
-Spawning agents sequentially when they could run in parallel is a protocol violation, not a style choice. Parallel dispatch reduces wall-clock latency proportionally — N agents in parallel complete in the time of the slowest, not the sum of all.
+Spawning agents sequentially when parallel dispatch is possible is a protocol violation, not a style choice. Parallel dispatch reduces wall-clock latency proportionally — N agents in parallel complete in the time of the slowest, not the sum of all.
 
 ### Git flow
 

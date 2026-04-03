@@ -400,6 +400,12 @@ map_effort() {
 map_sandbox_mode() {
     local permission_mode="$1"
     local tools="$2"
+    local override="${3:-}"
+
+    if [ -n "$override" ] && [ "$override" != "null" ]; then
+        echo "$override"
+        return
+    fi
 
     # plan mode is read-only
     if [ "$permission_mode" = "plan" ]; then
@@ -425,6 +431,12 @@ map_sandbox_mode() {
 # ---------------------------------------------------------------------------
 map_default_sandbox_mode() {
     local default_mode="$1"
+    local override="${2:-}"
+
+    if [ -n "$override" ] && [ "$override" != "null" ]; then
+        echo "$override"
+        return
+    fi
 
     case "$default_mode" in
         plan)         echo "read-only" ;;
@@ -563,6 +575,7 @@ generate_codex() {
         [ -n "$agent_id" ] || continue
 
         local name description model effort permission_mode tools disallowed_tools
+        local codex_sandbox_override
         local agent_skills
         local src_file dst_file
         name="$(yq -r ".agents.items.${agent_id}.name" "$TEAM_YAML")"
@@ -572,6 +585,7 @@ generate_codex() {
         permission_mode="$(yq -r ".agents.items.${agent_id}.permission_mode // \"\"" "$TEAM_YAML")"
         tools="$(yq -r ".agents.items.${agent_id}.tools[]" "$TEAM_YAML" | csv_from_yaml_array)"
         disallowed_tools="$(yq -r ".agents.items.${agent_id}.disallowed_tools // [] | .[]" "$TEAM_YAML" | csv_from_yaml_array)"
+        codex_sandbox_override="$(yq -r '.targets.codex.sandbox_mode // ""' "$SETTINGS_SHARED_YAML")"
         agent_skills="$(yq -r ".agents.items.${agent_id}.skills[]" "$TEAM_YAML")"
         src_file="$SCRIPT_DIR/$(yq -r ".agents.items.${agent_id}.instruction_file" "$TEAM_YAML")"
         dst_file="$CODEX_AGENTS_DIR/${name}.toml"
@@ -580,7 +594,7 @@ generate_codex() {
         local codex_model codex_effort codex_sandbox
         codex_model="$(map_model "$model")"
         codex_effort="$(map_effort "${effort:-medium}")"
-        codex_sandbox="$(map_sandbox_mode "$permission_mode" "$tools")"
+        codex_sandbox="$(map_sandbox_mode "$permission_mode" "$tools" "$codex_sandbox_override")"
 
         # Extract and expand body with Codex variable values
         local body expanded_body
@@ -664,17 +678,19 @@ TOML
     echo ""
     echo "Generating codex/config.toml..."
 
-    local default_mode runtime_approval codex_approval_override codex_network_access
+    local default_mode runtime_approval codex_approval_override codex_network_access codex_sandbox_override
     default_mode="$(map_filesystem_intent_to_claude_mode "$(yq -r '.runtime.filesystem' "$SETTINGS_SHARED_YAML")")"
     runtime_approval="$(yq -r '.runtime.approval' "$SETTINGS_SHARED_YAML")"
+    codex_sandbox_override="$(yq -r '.targets.codex.sandbox_mode // ""' "$SETTINGS_SHARED_YAML")"
     codex_approval_override="$(yq -r '.targets.codex.approval_policy // ""' "$SETTINGS_SHARED_YAML")"
     codex_network_access="$(yq -r '.targets.codex.network_access // .runtime.network_access // false' "$SETTINGS_SHARED_YAML")"
 
     local config_sandbox config_approval
-    config_sandbox="$(map_default_sandbox_mode "$default_mode")"
+    config_sandbox="$(map_default_sandbox_mode "$default_mode" "$codex_sandbox_override")"
     config_approval="$(map_approval_policy "$runtime_approval" "$codex_approval_override")"
 
-    cat > "$CODEX_DIR/config.toml" <<TOML
+    if [ "$config_sandbox" = "workspace-write" ]; then
+        cat > "$CODEX_DIR/config.toml" <<TOML
 #:schema https://developers.openai.com/codex/config-schema.json
 model = "gpt-5.3-codex"
 model_reasoning_effort = "medium"
@@ -684,6 +700,15 @@ approval_policy = "${config_approval}"
 [sandbox_workspace_write]
 network_access = ${codex_network_access}
 TOML
+    else
+        cat > "$CODEX_DIR/config.toml" <<TOML
+#:schema https://developers.openai.com/codex/config-schema.json
+model = "gpt-5.3-codex"
+model_reasoning_effort = "medium"
+sandbox_mode = "${config_sandbox}"
+approval_policy = "${config_approval}"
+TOML
+    fi
     echo "Generated: $CODEX_DIR/config.toml"
 }
 

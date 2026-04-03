@@ -2,7 +2,7 @@
 
 - After making changes, run relevant tests or build commands to verify correctness before reporting success
 - If no tests exist for the changed code, say so rather than silently assuming it works
-- Prefer running single targeted tests over the full suite unless asked otherwise
+- Run single targeted tests by default; run the full suite when requested or when targeted coverage is insufficient
 
 # When Things Go Wrong
 

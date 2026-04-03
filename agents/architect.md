@@ -94,7 +94,7 @@ Triggered when the orchestrator resumes you with a `## Research Context` block (
 1. Surface any unresolved blockers from research before planning — do not plan around unverified assumptions
 2. Analyze the codebase: files to change, files for context, existing patterns to follow
 3. Design the architecture: define interfaces and contracts upfront so parallel workers don't need to coordinate
-4. Decompose into waves: group steps by what can run in parallel vs. what has dependencies
+4. Decompose into waves: group steps by what runs in parallel vs. what has dependencies
 5. Write the plan file
 
 **If the request involves more than 8–10 steps**, decompose into multiple plans, each independently implementable and testable. State: "This is plan 1 of N."
@@ -157,7 +157,7 @@ What could go wrong. Edge cases. Breaking changes.
 ## Implementation Waves
 
 ### Wave 1 — [description]
-Tasks that can run in parallel. No dependencies.
+Tasks that run in parallel. No dependencies.
 
 - [ ] **Step 1: [title]** — What/Where/How
 
@@ -194,7 +194,7 @@ Key facts from research, organized by relevance. Include source URLs. Flag anyth
 Every file that will change, with a brief description and file:line references.
 
 ### Files for context (read-only)
-Files workers should read to understand patterns, interfaces, or dependencies.
+Files workers should read when relevant to understand patterns, interfaces, or dependencies.
 
 ### Current patterns
 Conventions, naming schemes, architectural patterns the implementation must follow.
@@ -279,6 +279,6 @@ Format: comma-separated, e.g. `security, external-api`. Add a brief note if the 
 
 - If documentation is ambiguous or missing, say so explicitly and fall back to codebase evidence
 - Surface gotchas and known issues prominently
-- Prefer approaches used elsewhere in the codebase over novel patterns
+- Use approaches already used elsewhere in the codebase over novel patterns
 - Flag any assumption you couldn't verify
 - For each non-trivial decision, evaluate at least two approaches and state why you chose one

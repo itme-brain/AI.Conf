@@ -10,4 +10,4 @@
 - Use `MEMORY.md` in that directory as the index (one line per entry pointing to a file)
 - Memory files use frontmatter: `name`, `description`, `type` (user/feedback/project/reference)
 - Commit `memory/` with the repo so memory persists across machines and sessions
-- Tool-specific runtime memory (for example `.claude/agent-memory/`) is optional and does not replace `memory/` as the project source of truth
+- Tool-specific runtime memory (for example `.claude/agent-memory/`) is supplemental and MUST NOT replace `memory/` as the project source of truth

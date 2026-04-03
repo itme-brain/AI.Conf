@@ -12,24 +12,24 @@ when_to_use: Automatically loaded by agents via skills frontmatter. Load manuall
    - **READMEs:** each major directory gets a README explaining why it exists and what it contains
    - **Exception:** helper/utility functions only need inline docs, not external docs
 2. **Maintainability** — code is easy to read, modify, and debug. Favor clarity over cleverness.
-3. **Reusability** — extract shared logic into well-defined interfaces. Don't duplicate. Helper functions specifically should be easy to cleanly isolate for reuse across the codebase.
-4. **Modularity** — clean separation of duties and logic. Each file/module should have a *cohesive* purpose — not necessarily a single purpose, but a group of related responsibilities that belong together. Avoid both god files and excessive fragmentation.
+3. **Reusability** — extract shared logic into well-defined interfaces. Don't duplicate. Helper functions specifically must be easy to cleanly isolate for reuse across the codebase.
+4. **Modularity** — clean separation of duties and logic. Each file/module must have a *cohesive* purpose — not necessarily a single purpose, but a group of related responsibilities that belong together. Avoid both god files and excessive fragmentation.
 
 ## Naming
 
 - Default to `snake_case` unless the language has a stronger convention (e.g., `camelCase` in JavaScript, `PascalCase` for C++ classes)
 - Language-specific formats take precedence over personal preference
-- Names should be descriptive — no abbreviations unless universally understood
+- Names must be descriptive — no abbreviations unless universally understood
 - No magic numbers — extract to named constants
 
 ## Commits
 
 - Use conventional commit format: `type(scope): description`
   - Types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `style`, `perf`
-  - Scope is optional but recommended (e.g., `feat(auth): add JWT middleware`)
+  - Scope is recommended (e.g., `feat(auth): add JWT middleware`)
   - Description is imperative mood, lowercase, no period
 - One logical change per commit — don't bundle unrelated changes
-- Commit message body (optional) explains **why**, not what
+- Commit message body is optional; when present, it explains **why**, not what
 
 ## Error handling
 
@@ -50,13 +50,13 @@ when_to_use: Automatically loaded by agents via skills frontmatter. Load manuall
 ## Testing
 
 - New functionality gets tests. Bug fixes get regression tests.
-- Tests should be independent — no shared mutable state between test cases
+- Tests must be independent — no shared mutable state between test cases
 - Test the interface, not the implementation — tests shouldn't break on internal refactors
 - Name tests to describe the behavior being verified, not the function being called
 
 ## Interface design
 
-- Public APIs should be stable — think before exposing. Easy to extend, hard to break.
+- Public APIs must be stable — think before exposing. Easy to extend, hard to break.
 - Internal interfaces can evolve freely — don't over-engineer internal boundaries
 - Validate at system boundaries (user input, external APIs, IPC). Trust internal code.
 
@@ -64,11 +64,11 @@ when_to_use: Automatically loaded by agents via skills frontmatter. Load manuall
 
 - Never trust external input — validate and sanitize at system boundaries
 - No hardcoded secrets, credentials, or keys
-- Prefer established libraries over hand-rolled crypto, auth, or parsing
+- Use established libraries over hand-rolled crypto, auth, or parsing
 
 ## File organization
 
-- Directory hierarchy should make ownership and dependencies obvious
+- Directory hierarchy must make ownership and dependencies obvious
 - Each major directory gets a README explaining its purpose
 - If you can't tell what a directory contains from its path, reorganize
 - Group related functionality cohesively — don't fragment for the sake of "single responsibility"

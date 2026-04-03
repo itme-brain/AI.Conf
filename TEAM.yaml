@@ -274,7 +274,6 @@ rules:
     - 03-git
     - 04-tools
     - 05-verification
-    - 06-nix
     - 07-research
   items:
     01-session:
@@ -304,12 +303,6 @@ rules:
     05-verification:
       id: 05-verification
       source_file: rules/05-verification.md
-      applies_to:
-        - claude
-        - codex
-    06-nix:
-      id: 06-nix
-      source_file: rules/06-nix.md
       applies_to:
         - claude
         - codex

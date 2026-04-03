@@ -49,6 +49,7 @@ targets:
   codex:
     # Intentional target override: Codex does not expose Claude-equivalent
     # per-tool/path allow/deny/ask controls, so this repo runs Codex in
-    # full-auto with network enabled by default.
+    # full-auto with no sandbox and network enabled by default.
+    sandbox_mode: danger-full-access
     approval_policy: never
     network_access: true

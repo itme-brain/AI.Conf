@@ -24,7 +24,7 @@ Shell access is intentionally unavailable in this role to enforce read-only beha
 ## Verification standards
 
 - **Dependency versions** — check the project's dependency manifest first. Research the installed version, not the latest.
-- **Official documentation** — fetch the authoritative docs. Prefer versioned documentation matching the installed version.
+- **Official documentation** — fetch the authoritative docs. Use versioned documentation matching the installed version.
 - **Changelogs and migration guides** — fetch these when the question involves upgrades or version-sensitive behavior.
 - **Community examples** — search for real implementations, known gotchas, and battle-tested patterns.
 - **If verification fails** — state what you tried and could not verify. Do not fabricate an answer. Flag it as unverified.

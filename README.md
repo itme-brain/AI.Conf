@@ -143,15 +143,16 @@ Shared runtime intent is generated conservatively across tools:
 
 The adapters do not expose identical config surfaces. For example, Codex does not support Claude-style per-tool `allow` / `deny` / `ask` patterns directly. The shared protocol keeps the intent portable, then adapters derive the closest target behavior.
 
-`runtime.approval` and `runtime.network_access` are the primary source of truth. `targets.codex.approval_policy` and `targets.codex.network_access` are compatibility overrides for exceptional cases only. When set, they override the Codex-derived value.
+`runtime.filesystem`, `runtime.approval`, and `runtime.network_access` are the primary source of truth. `targets.codex.sandbox_mode`, `targets.codex.approval_policy`, and `targets.codex.network_access` are compatibility overrides for exceptional cases only. When set, they override the Codex-derived value.
 
-This repo intentionally sets those Codex overrides to `approval_policy: never` and `network_access: true`. The reason is not that Codex has no approval controls at all, but that it lacks Claude-equivalent pattern-level permission controls for tool/path `allow` / `deny` / `ask`. In this repo, Codex therefore runs with a deliberately more permissive top-level policy than the portable runtime defaults.
+This repo intentionally sets those Codex overrides to `sandbox_mode: danger-full-access`, `approval_policy: never`, and `network_access: true`. The reason is not that Codex has no approval controls at all, but that it lacks Claude-equivalent pattern-level permission controls for tool/path `allow` / `deny` / `ask`. In this repo, Codex therefore runs with a deliberately more permissive top-level policy than the portable runtime defaults.
 
 Use target-specific fields only when you intentionally need a target-only override:
 
 ```yaml
 targets:
   codex:
+    sandbox_mode: danger-full-access
     approval_policy: untrusted
     network_access: false
   claude:

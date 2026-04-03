@@ -143,6 +143,15 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
+            "sandbox_mode": {
+              "type": "string",
+              "enum": [
+                "read-only",
+                "workspace-write",
+                "danger-full-access"
+              ],
+              "description": "Codex-only compatibility override. Prefer runtime.filesystem as the portable source of truth."
+            },
             "approval_policy": {
               "type": "string",
               "enum": [

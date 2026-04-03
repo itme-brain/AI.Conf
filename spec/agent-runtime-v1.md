@@ -55,6 +55,7 @@ Target blocks are escape hatches, not the main schema.
 Current target-specific fields:
 
 - `targets.claude.claude_md_excludes`
+- `targets.codex.sandbox_mode` (optional override of derived sandbox mode)
 - `targets.codex.approval_policy` (optional override of derived approval)
 - `targets.codex.network_access` (optional override of derived network access)
 
@@ -63,7 +64,7 @@ Authority rules:
 - `runtime.approval` and `runtime.network_access` are the portable source of truth.
 - Codex target fields exist for explicit compatibility overrides and should normally be omitted.
 - When Codex target fields are set, they intentionally override the derived Codex value.
-- In this repo, `targets.codex.approval_policy` and `targets.codex.network_access` are intentionally set so Codex runs with `approval_policy = "never"` and network enabled by default. This is a deliberate target-specific compatibility choice, not an accidental divergence.
+- In this repo, `targets.codex.sandbox_mode`, `targets.codex.approval_policy`, and `targets.codex.network_access` are intentionally set so Codex runs with `sandbox_mode = "danger-full-access"`, `approval_policy = "never"`, and network enabled by default. This is a deliberate target-specific compatibility choice, not an accidental divergence.
 
 ## Adapter rules
 
@@ -88,10 +89,11 @@ Lossiness:
 
 - `runtime.filesystem = read-only` -> `sandbox_mode = "read-only"`
 - `runtime.filesystem = workspace-write` -> `sandbox_mode = "workspace-write"`
+- `targets.codex.sandbox_mode` -> overrides the derived `sandbox_mode`
 - `runtime.approval = manual` -> `approval_policy = "on-request"` (unless overridden)
 - `runtime.approval = guarded-auto` -> `approval_policy = "untrusted"` (unless overridden)
 - `runtime.approval = full-auto` -> `approval_policy = "never"` (unless overridden)
-- `runtime.network_access` -> `[sandbox_workspace_write].network_access`
+- `runtime.network_access` -> `[sandbox_workspace_write].network_access` when `sandbox_mode = "workspace-write"`
 
 Lossiness:
 
