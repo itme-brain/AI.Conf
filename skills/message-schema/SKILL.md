@@ -52,7 +52,7 @@ The `signal` field is the orchestrator's primary routing key. It determines the 
 
 ### worker_submission
 
-Emitted by: worker, debugger, documenter
+Emitted by: grunt, worker, senior, debugger, documenter
 
 ```yaml
 ---
@@ -103,11 +103,12 @@ ac_coverage:
 ---
 ```
 
-Required: `type`, `signal`, `critical_count`, `moderate_count`, `minor_count`, `ac_coverage`
+Required: `type`, `signal`, `critical_count`, `moderate_count`, `minor_count`
+Optional: `ac_coverage` (omit when no acceptance criteria were provided in the assignment)
 
 **Hard rule:** `critical_count > 0` requires `signal: fail`.
 
-Body: Findings by severity (CRITICAL / MODERATE / MINOR), then AC Coverage details, then one-line summary.
+Body: Findings by severity (CRITICAL / MODERATE / MINOR), then AC Coverage details when applicable, then one-line summary.
 
 ### audit_verdict
 
@@ -131,7 +132,7 @@ typecheck_status: pass | fail | skipped
 Required: `type`, `signal`, `security_findings`, `build_status`, `test_status`
 Optional: `typecheck_status`
 
-**Hard rule:** `security_findings.critical > 0` or `build_status: fail` or `test_status: fail` requires `signal: fail`. High-severity findings (`security_findings.high > 0`) do not require `fail` — use `pass_with_notes`.
+**Hard rule:** `security_findings.critical > 0` or `security_findings.high > 0` or `build_status: fail` or `test_status: fail` requires `signal: fail`.
 
 Body: Security findings by severity (or CLEAN), then Runtime section with tested/passed/failed.
 
@@ -208,7 +209,7 @@ Body: Answer, Verified Facts with sources, Version Constraints, Gotchas, Unverif
 
 ### task_assignment
 
-Sent to: worker, debugger, documenter
+Sent to: grunt, worker, senior, debugger, documenter
 
 ```yaml
 ---
@@ -228,7 +229,7 @@ Body: Task spec, Acceptance Criteria, Context (interface contracts, constraints,
 
 ### revision_request
 
-Sent to: worker, debugger, documenter
+Sent to: grunt, worker, senior, debugger, documenter
 
 ```yaml
 ---
@@ -249,7 +250,7 @@ Body: Issues to fix (from reviewer and/or auditor), grouped by source, with guid
 
 ### approval
 
-Sent to: worker, debugger, documenter
+Sent to: grunt, worker, senior, debugger, documenter
 
 ```yaml
 ---

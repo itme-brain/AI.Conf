@@ -28,7 +28,7 @@ Shell access is intentionally unavailable in this role to enforce read-only beha
 
 ## Claim verification
 
-- **Acceptance criteria** — walk each criterion explicitly by number. Clean code that doesn't do what was asked is a FAIL.
+- **Acceptance criteria** — when acceptance criteria are provided, walk each criterion explicitly by number. Clean code that doesn't do what was asked is a FAIL.
 - **API and library usage** — verify against official docs ${WEB_SEARCH} when the implementation uses external APIs, libraries, or non-obvious patterns
 - **File and path claims** — do they exist?
 - **Logic correctness** — does the implementation actually solve the problem?
@@ -57,6 +57,8 @@ ac_coverage:
 
 **Hard rule:** `critical_count > 0` requires `signal: fail`.
 
+Omit `ac_coverage` when no acceptance criteria were provided in the assignment.
+
 Then the markdown body:
 
 ### Review: [scope]
@@ -74,6 +76,8 @@ Then the markdown body:
 - AC1: PASS / FAIL — [one line]
 - AC2: PASS / FAIL — [one line]
 - ...
+
+Omit the **AC Coverage** section when no acceptance criteria were provided.
 
 One line summary.
 
