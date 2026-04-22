@@ -9,8 +9,8 @@
         "apiKey": "{env:LLAMA_API_KEY}"
       },
       "models": {
-        "llamacpp/Qwen3.6-35B-A3B-UD-Q6_K": {
-          "name": "Qwen3.6-35B-A3B-UD-Q6_K",
+        "llamacpp/Qwen3.6-27B-Q4_K_M": {
+          "name": "Qwen3.6-27B-Q4_K_M",
           "limit": {
             "context": 262144,
             "output": 8192
@@ -40,5 +40,5 @@
       "enabled": true
     }
   },
-  "model": "rigby/llamacpp/Qwen3.6-35B-A3B-UD-Q6_K"
+  "model": "rigby/llamacpp/Qwen3.6-27B-Q4_K_M"
 }
