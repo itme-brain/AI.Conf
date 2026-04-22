@@ -33,7 +33,7 @@
   "mcp": {
     "search": {
       "type": "remote",
-      "url": "https://ai.ramos.codes/mcp/web_search/mcp",
+      "url": "https://ai.ramos.codes/mcp/web-search",
       "headers": {
         "X-API-Key": "{env:LLAMA_API_KEY}"
       },
